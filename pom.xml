@@ -390,6 +390,7 @@
     </dependencies>
 
    <!--//region deploy -->
+    <name>Java Units</name>
     <url>https://github.com/ZenLiuCN/units</url>
     <developers>
         <developer>

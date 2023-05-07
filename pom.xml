@@ -74,7 +74,7 @@
         <!--//endregion -->
 
         <!--//region Components -->
-        <versions.caffeine>3.1.1</versions.caffeine>
+        <versions.caffeine>2.9.3</versions.caffeine>
         <versions.javapoet>1.13.0</versions.javapoet>
         <versions.byte-buddy>1.14.4</versions.byte-buddy>
         <!--//endregion -->

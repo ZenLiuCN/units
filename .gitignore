@@ -1,0 +1,11 @@
+.vscode/
+.history/
+*.vsix
+.idea/
+cmake-build-*/
+*.iws
+*.iml
+out/
+target/
+enhance.properties
+codegen.properties

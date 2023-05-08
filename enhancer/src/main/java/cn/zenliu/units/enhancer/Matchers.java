@@ -19,6 +19,8 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 
+import java.lang.annotation.Annotation;
+
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
 /**
@@ -31,6 +33,10 @@ public interface Matchers {
         return takesNoArguments()
                 .and(not(returns(TypeDescription.ForLoadedType.of(void.class))))
                 ;
+    }
+
+    static Junction<TypeDescription> annotated(Class<? extends Annotation> type) {
+        return hasAnnotation(annotationType(type));
     }
 
     static Junction<MethodDescription> isSetterLike(TypeDescription type) {

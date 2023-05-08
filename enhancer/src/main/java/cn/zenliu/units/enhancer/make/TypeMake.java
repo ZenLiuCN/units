@@ -50,6 +50,7 @@ public class TypeMake {
 
     private DynamicType.Builder<?> builder;
 
+    //region End actions
     public DynamicType.Builder<?> builder() {
         return builder;
     }
@@ -80,6 +81,7 @@ public class TypeMake {
     public <S extends ClassLoader> DynamicType.Loaded<?> load(@Nullable S loader, ClassLoadingStrategy<? super S> strategy) {
         return make().load(loader, strategy);
     }
+    //endregion
 
     @Synchronized
     public TypeMake sync(UnaryOperator<DynamicType.Builder<?>> act) {
@@ -89,6 +91,14 @@ public class TypeMake {
 
     public TypeMake field(FieldDescription f) {
         return sync(b -> b.define(f));
+    }
+
+    public TypeMake initialManual(UnaryOperator<Manual> impl) {
+        return sync(b -> b.initializer(impl.apply(Manual.create())));
+    }
+
+    public TypeMake initialComputed(UnaryOperator<Compute> impl) {
+        return sync(b -> b.initializer(impl.apply(Compute.create(b.toTypeDescription(), null))));
     }
 
     public TypeMake field(FieldDescription f, ByteCodeAppender init) {

@@ -73,7 +73,7 @@ public class CodeGenerateProcessor implements Processor, BaseUtil {
             System.err.println("[ CodeGenerator ] fail to load Configure instance");
             throw new IllegalStateException("require a Configure service provided");
         }
-        if (configure.init()) {
+        if (!configure.init()) {
             configure.debug("user.dir {}", Locator.USER_DIR());
             configure.error("missing or invalid configure file, processor may disabled ,unless found a module config file");
             this.supportedTypes = Collections.emptySet();

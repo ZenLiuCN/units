@@ -28,7 +28,8 @@
         <module.name>units.enhancer</module.name>
     </properties>
     <artifactId>enhancer</artifactId>
-    <description>Enhancer: ByteBuddy based compile time class enhance.</description>
+    <name>Enhancer</name>
+    <description>byte-buddy based compile time class enhancer framework.</description>
     <dependencies>
         <dependency>
             <groupId>net.bytebuddy</groupId>

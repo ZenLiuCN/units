@@ -25,12 +25,14 @@ License as `GPL v2 with classpath exception`.
 # Processor
 1. Requires [JavaPoet](https://github.com/square/javapoet) to run;
 2. Requires [slf4j-api](https://www.qos.ch/) to run;
+3. Property `process.debug` to enable Locator debug print;
+4. Properties `process.properites` to config processors;
 # Enhancer
 1. Requires [ByteBuddy](https://bytebuddy.net/) to run; 
 2. Requires [slf4j-api](https://www.qos.ch/) to run;
 3. Requires ByteBuddy Plugin for build tool maven or gradle. Eg:
-```xml
- <plugin>
+    ```xml
+    <plugin>
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy-maven-plugin</artifactId>
         <version>${byte-buddy-maven-plugin.version}</version>
@@ -55,6 +57,8 @@ License as `GPL v2 with classpath exception`.
             <classPathDiscovery>true</classPathDiscovery>
         </configuration>
     </plugin>
-```
+    ```
+4. Property `enhance.debug` to enable Locator debug print;
+5. Properties `enhance.properites` to config processors;
 # Reflect
 1. Requires [Caffeine](https://github.com/ben-manes/caffeine) to run.

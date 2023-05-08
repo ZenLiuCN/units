@@ -28,7 +28,8 @@
         <module.name>units.errors</module.name>
     </properties>
     <artifactId>error</artifactId>
-    <description>Domain error units, includes DomainError and Result.</description>
+    <name>Error</name>
+    <description>Error units, includes DomainError and Result.</description>
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

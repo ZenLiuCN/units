@@ -36,6 +36,12 @@ public interface Configurer extends Configure {
      */
     Map<ElementMatcher.Junction<TypeDescription>, SortedSet<Enhancer>> enhancers(EnhanceUtil u);
 
+    /**
+     * @return success or not found a root
+     */
+    default boolean init() {
+        return Configure.super.init("[ Enhancer ]", "enhance.debug");
+    }
     default Config resolve(Context ctx, EnhanceUtil u) {
         var t = ctx.type();
         var pkg = t.getPackage();

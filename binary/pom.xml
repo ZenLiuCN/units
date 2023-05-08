@@ -25,9 +25,10 @@
     </parent>
 
     <properties>
-            <module.name>units.binary</module.name>
+        <module.name>units.binary</module.name>
     </properties>
     <artifactId>binary</artifactId>
-    <description>Binary: simple binary units without dependencies</description>
+    <name>Binary</name>
+    <description>Simple binary units without dependencies</description>
 
 </project>

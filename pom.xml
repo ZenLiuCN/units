@@ -26,6 +26,7 @@
         <module>codegen</module>
         <module>binary</module>
         <module>enhancer</module><module>reflect</module>
+        <module>bom</module>
     </modules>
 
 

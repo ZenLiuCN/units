@@ -28,7 +28,8 @@
         <module.name>units.codegen</module.name>
     </properties>
     <artifactId>codegen</artifactId>
-    <description>CodeGen: code generate basic units</description>
+    <name>CodeGen</name>
+    <description>code generate basic units</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

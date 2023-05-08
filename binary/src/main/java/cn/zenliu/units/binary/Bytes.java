@@ -19,56 +19,60 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * Simple Byte Buffer
+ * Simple binary buffer operator. Each implement may have different store strategy.
  *
  * @author Zen.Liu
- * @since 2023-04-27
+ * @since 2023-05-08
  */
-public final class Bytes {
-    private byte[] buf;
-    private int index;
-    private final int expand;
+public interface Bytes {
+    Bytes put(boolean val);
+
+    Bytes put(int val);
+
+    Bytes put(long val);
+
+    Bytes put(float val);
+
+    Bytes put(double val);
+
+    Bytes put(String val);
+
+    Bytes put(byte[] val);
+
+    boolean readBoolean();
+
+    int readInt();
+
+    long readLong();
+
+    float readFloat();
+
+    double readDouble();
+
+    String readString();
+
+    byte[] readBytes();
 
     /**
-     * @param buf    initial byte array
-     * @param index  current empty slot index
-     * @param expand size for time each expand
+     * @return the final bytes result for write or original remains bytes for read
      */
-    Bytes(byte[] buf, int index, int expand) {
-        this.buf = buf;
-        this.index = index;
-        this.expand = expand;
-    }
+    byte[] buf();
 
-    public static Bytes read(byte[] buf) {
-        return new Bytes(buf, 0, 0);
-    }
+    /**
+     * @return last readable or writeable index
+     */
+    int index();
 
-    public static Bytes write(byte[] buf, int offset, int expand) {
-        return new Bytes(buf, offset, expand);
-    }
+    /**
+     * @return the internal buffer type
+     */
+    Object unwrap();
 
-    void ensure(int size) {
-        int e = buf.length - index - size;
-        if (e < 0) {
-            if (expand > 0)
-                this.buf = Arrays.copyOf(buf, buf.length + expand);
-            else throw new IllegalStateException("data broken");
-        }
-    }
-
-
-    public Bytes put(boolean val) {
-        ensure(1);
-        buf[index++] = (byte) (val ? 1 : 0);
-        return this;
-    }
-
-    public static int zigzag(int i) {
+    static int zigZag(int i) {
         return (i << 1) ^ (i << 31);
     }
 
-    public static int countVarint(int val) {
+    static int varIntLength(int val) {
         int n = 0;
         do {
             n++;
@@ -77,22 +81,11 @@ public final class Bytes {
         return n;
     }
 
-    public Bytes put(int val) {
-        //val = zigzag(val);
-        ensure(countVarint(val));
-        do {
-            int bits = val & 0x7F;
-            val >>>= 7;
-            buf[index++] = (byte) (bits + ((val != 0) ? 0x80 : 0));
-        } while (val > 0);
-        return this;
-    }
-
-    public static long zigzag(long i) {
+    static long zigZag(long i) {
         return (i << 1L) ^ (i << 63L);
     }
 
-    public static int countVarint(long val) {
+    static int varIntLength(long val) {
         int n = 0;
         do {
             n++;
@@ -101,128 +94,184 @@ public final class Bytes {
         return n;
     }
 
-    public Bytes put(long val) {
-        //val = zigzag(val);
-        ensure(countVarint(val));
-        do {
-            long bits = val & 0x7FL;
-            val >>>= 7L;
-            buf[index++] = (byte) (bits + ((val != 0) ? 0x80L : 0L));
-        } while (val > 0);
-        return this;
-    }
-
-    public Bytes put(float val) {
-        return put(Float.floatToIntBits(val));
-    }
-
-    public Bytes put(double val) {
-        return put(Double.doubleToLongBits(val));
-    }
-
-    public Bytes put(byte[] val) {
-        if (val == null) {
-            put(0);
-            return this;
-        }
-        int n = val.length;
-        if (n == 0) {
-            put(0);
-            return this;
-        }
-        put(n);
-        ensure(n);
-        System.arraycopy(val, 0, buf, index, val.length);
-        index += n;
-        return this;
-    }
-
-    public Bytes put(String val) {
-        if (val == null || val.isEmpty()) return put(0);
-        byte[] bs = val.getBytes(StandardCharsets.UTF_8);
-        return put(bs);
-    }
-
-    public boolean readBoolean() {
-        ensure(1);
-        return buf[index++] == 1;
-    }
-
-    public static int unzigzag(int i) {
+    static int unZigZag(int i) {
         return (i >>> 1) ^ -(i & 1);
     }
 
-    public int readInt() {
-        int i = 0;
-        int s = 0;
-        int b;
-        do {
-            if (s >= 32) throw new IllegalStateException("data broken");
-            i |= (b = buf[index++]) & 0x7F << s;
-            s += 7;
-        } while ((b & 0x80) != 0);
-        return i;
-        // return unzigzag(i);
-    }
-
-    public static long unzigzag(long i) {
+    static long unZigZag(long i) {
         return (i >>> 1) ^ -(i & 1);
     }
 
-    public long readLong() {
-        long i = 0L;
-        int s = 0;
-        int b;
-        do {
-            if (s >= 64) throw new IllegalStateException("data broken");
-            i |= ((long) (b = buf[index++]) & 0x7F) << s;
-            s += 7;
-        } while ((b & 0x80) != 0);
-        return i;
-        // return unzigzag(i);
+    static Bytes readVarIntBytes(byte[] buf) {
+        return VarIntBytes.read(buf);
     }
 
-    public float readFloat() {
-        return Float.intBitsToFloat(readInt());
+    static Bytes writeVarIntBytes(byte[] buf, int offset, int expandStep) {
+        return VarIntBytes.write(buf, offset, expandStep);
     }
 
-    public double readDouble() {
-        return Double.longBitsToDouble(readLong());
+    final class VarIntBytes implements Bytes {
+        private byte[] buf;
+        private int index;
+        private final int expand;
+
+        /**
+         * @param buf    initial byte array
+         * @param index  current empty slot index
+         * @param expand size for time each expand
+         */
+        VarIntBytes(byte[] buf, int index, int expand) {
+            this.buf = buf;
+            this.index = index;
+            this.expand = expand;
+        }
+
+        public static Bytes read(byte[] buf) {
+            return new VarIntBytes(buf, 0, 0);
+        }
+
+        public static Bytes write(byte[] buf, int offset, int expand) {
+            return new VarIntBytes(buf, offset, expand);
+        }
+
+        void ensure(int size) {
+            int e = buf.length - index - size;
+            if (e < 0) {
+                if (expand > 0)
+                    this.buf = Arrays.copyOf(buf, buf.length + expand);
+                else throw new IllegalStateException("data broken");
+            }
+        }
+
+        public Bytes put(boolean val) {
+            ensure(1);
+            buf[index++] = (byte) (val ? 1 : 0);
+            return this;
+        }
+
+        public Bytes put(int val) {
+            //val = zigzag(val);
+            ensure(varIntLength(val));
+            do {
+                int bits = val & 0x7F;
+                val >>>= 7;
+                buf[index++] = (byte) (bits + ((val != 0) ? 0x80 : 0));
+            } while (val > 0);
+            return this;
+        }
+
+        public Bytes put(long val) {
+            //val = zigzag(val);
+            ensure(Bytes.varIntLength(val));
+            do {
+                long bits = val & 0x7FL;
+                val >>>= 7L;
+                buf[index++] = (byte) (bits + ((val != 0) ? 0x80L : 0L));
+            } while (val > 0);
+            return this;
+        }
+
+        public Bytes put(float val) {
+            return put(Float.floatToIntBits(val));
+        }
+
+        public Bytes put(double val) {
+            return put(Double.doubleToLongBits(val));
+        }
+
+        public Bytes put(byte[] val) {
+            if (val == null) {
+                put(0);
+                return this;
+            }
+            int n = val.length;
+            if (n == 0) {
+                put(0);
+                return this;
+            }
+            put(n);
+            ensure(n);
+            System.arraycopy(val, 0, buf, index, val.length);
+            index += n;
+            return this;
+        }
+
+        public Bytes put(String val) {
+            if (val == null || val.isEmpty()) return put(0);
+            byte[] bs = val.getBytes(StandardCharsets.UTF_8);
+            return put(bs);
+        }
+
+        public boolean readBoolean() {
+            ensure(1);
+            return buf[index++] == 1;
+        }
+
+        public int readInt() {
+            int i = 0;
+            int s = 0;
+            int b;
+            do {
+                if (s >= 32) throw new IllegalStateException("data broken");
+                i |= (b = buf[index++]) & 0x7F << s;
+                s += 7;
+            } while ((b & 0x80) != 0);
+            return i;
+            // return unzigzag(i);
+        }
+
+        public long readLong() {
+            long i = 0L;
+            int s = 0;
+            int b;
+            do {
+                if (s >= 64) throw new IllegalStateException("data broken");
+                i |= ((long) (b = buf[index++]) & 0x7F) << s;
+                s += 7;
+            } while ((b & 0x80) != 0);
+            return i;
+            // return unzigzag(i);
+        }
+
+        public float readFloat() {
+            return Float.intBitsToFloat(readInt());
+        }
+
+        public double readDouble() {
+            return Double.longBitsToDouble(readLong());
+        }
+
+        public byte[] readBytes() {
+            int n = readInt();
+            if (n == 0) return new byte[0];
+            byte[] b = new byte[n];
+            System.arraycopy(buf, index, b, 0, n);
+            index += n;
+            return b;
+        }
+
+        public String readString() {
+            byte[] bs = readBytes();
+            if (bs.length == 0) return "";
+            return new String(bs, StandardCharsets.UTF_8);
+        }
+
+        public byte[] buf() {
+            return expand > 0 ? Arrays.copyOf(buf, index) : Arrays.copyOfRange(buf, index, buf.length);
+        }
+
+        @Override
+        public Object unwrap() {
+            return buf;
+        }
+
+        /**
+         * last empty slot or next readable slot
+         */
+        public int index() {
+            return index;
+        }
+
+
     }
-
-    public byte[] readBytes() {
-        int n = readInt();
-        if (n == 0) return new byte[0];
-        byte[] b = new byte[n];
-        System.arraycopy(buf, index, b, 0, n);
-        index += n;
-        return b;
-    }
-
-    public String readString() {
-        byte[] bs = readBytes();
-        if (bs.length == 0) return "";
-        return new String(bs, StandardCharsets.UTF_8);
-    }
-
-    public byte[] buf() {
-        return buf;
-    }
-
-    /**
-     * last empty slot or next readable slot
-     */
-    public int index() {
-        return index;
-    }
-
-    public int expand() {
-        return expand;
-    }
-
-
 }
-
-
-
-

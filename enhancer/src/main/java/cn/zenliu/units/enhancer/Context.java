@@ -15,6 +15,7 @@
 
 package cn.zenliu.units.enhancer;
 
+import cn.zenliu.units.enhancer.make.Make;
 import lombok.Value;
 import lombok.experimental.Accessors;
 import net.bytebuddy.description.annotation.AnnotationDescription;
@@ -27,6 +28,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
@@ -43,6 +45,7 @@ public class Context {
     TypeDescription type;
     List<DynamicType.Builder<?>> gen;
     ClassFileLocator locator;
+
     public Stream<FieldDescription.InDefinedShape> fields() {
         return type.getDeclaredFields().stream();
     }
@@ -76,4 +79,16 @@ public class Context {
                 type().getDeclaredAnnotations().filter(annotationType(type)).stream(),
                 type().getInheritedAnnotations().filter(annotationType(type)).stream());
     }
+
+    public Make.MethodMake declareMethod(String name) {
+        return Make.method().declaringClass(type).name(Objects.requireNonNull(name));
+    }
+    public Make.MethodMake declareConstructor() {
+        return Make.method().declaringClass(type).name(MethodDescription.CONSTRUCTOR_INTERNAL_NAME);
+    }
+
+    public Make.FieldMake declareField() {
+        return Make.field().declaringClass(type);
+    }
+
 }

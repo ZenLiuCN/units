@@ -38,6 +38,11 @@ public interface Configurer extends Configure {
      */
     Map<String, Set<CodeGenerator>> generators();
 
+
+    default boolean init() {
+        return Configure.super.init("[ Processor ]", "process.debug");
+    }
+
     default Configure.Config resolve(BaseUtil u, Element element) {
         URI uri = com.sun.source.util.Trees.instance(u.env()).getPath(element).getCompilationUnit().getSourceFile().toUri();
         if (uri.getScheme() == null) {
@@ -61,7 +66,7 @@ public interface Configurer extends Configure {
     class DefaultImpl extends Configure.DefaultConfigure implements Configurer {
 
         public DefaultImpl() {
-            super("codegen.properties");
+            super("process.properties");
         }
 
         @Override

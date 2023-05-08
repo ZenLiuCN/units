@@ -28,6 +28,7 @@
         <module.name>units.classes</module.name>
     </properties>
     <artifactId>classes</artifactId>
-    <description>Classes: units with classes and classes loaders.</description>
+    <name>Classes</name>
+    <description>units for classes and classes loaders.</description>
 
 </project>

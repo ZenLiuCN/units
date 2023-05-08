@@ -28,7 +28,8 @@
         <module.name>units.processor</module.name>
     </properties>
     <artifactId>processor</artifactId>
-    <description>Processor: the base units to implement APT code generator</description>
+    <name>Processor</name>
+    <description>The base units to implement APT code generator</description>
     <dependencies>
 
         <dependency>

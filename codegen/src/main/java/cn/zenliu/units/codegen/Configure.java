@@ -68,11 +68,24 @@ public interface Configure {
     /**
      * Default for maven, override to implement for other build tool
      *
-     * @param outputClass found output class root
+     * @param outputClass found output class root:
      * @return module root or project root
      */
     default Path classesToModuleRoot(Path outputClass) {
-        return outputClass.toAbsolutePath().getParent().getParent();
+        var it = outputClass.iterator();
+        var out = outputClass;
+        while (it.hasNext()) {
+            var cur = it.next();
+            if (cur.getFileName().toString().equalsIgnoreCase("target")) {
+                out = cur.toAbsolutePath().getParent();
+                break;
+            }
+        }
+        if (locator().log.isDebugEnabled()) {
+            debug("module relative root {}", out);
+            return out;
+        }
+        return out;
     }
 
     /**
@@ -149,10 +162,12 @@ public interface Configure {
     /**
      * @return found a root config or not
      */
-    default boolean init() {
-        var conf = new Locator(this::isGeneratorConfig, this::isBuildToolConfig, 14, 5, System.getProperty("generator.debug") != null, "[ CodeGenerator ] ");
+    default boolean init(String prefix, String debugKey) {
+        var conf = new Locator(this::isGeneratorConfig, this::isBuildToolConfig, 14, 5,
+                System.getProperty(debugKey == null ? "codegen.debug" : debugKey) != null,
+                prefix == null ? "[ CodeGenerator ] " : prefix);
         locator(conf);
-        return conf.root() == null;
+        return conf.root() != null;
     }
 
     default boolean resolve(Path root) {

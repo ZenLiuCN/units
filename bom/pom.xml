@@ -25,16 +25,48 @@
     </parent>
 
     <properties>
-        <module.name>units.reflect</module.name>
+        <module.name>units.bom</module.name>
     </properties>
-    <artifactId>reflect</artifactId>
-    <name>Reflect</name>
-    <description>Reflect: enhance reflect tools</description>
+    <artifactId>bom</artifactId>
+    <name>Bill Of Materials</name>
+    <description>DOM of units</description>
+    <packaging>pom</packaging>
     <dependencies>
         <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <scope>provided</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>binary</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>classes</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>reflect</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>error</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>codegen</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>enhancer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>processor</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
+
 </project>

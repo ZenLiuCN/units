@@ -267,7 +267,7 @@ public class TypeInfo {
      * Write to binary present.
      */
     public static byte[] serialize(TypeInfo info) {
-        var buf = Bytes.write(new byte[1024], 0, 256);
+        var buf = Bytes.writeVarIntBytes(new byte[1024], 0, 256);
         serialize(info, buf);
         return Arrays.copyOf(buf.buf(), buf.index());
     }
@@ -276,7 +276,7 @@ public class TypeInfo {
      * From a byte array.
      */
     public static TypeInfo deserialize(byte[] buf) {
-        return deserialize(Bytes.read(buf));
+        return deserialize(Bytes.readVarIntBytes(buf));
     }
 
     /**
@@ -285,7 +285,7 @@ public class TypeInfo {
      * @param base64 base64 std encoded string
      */
     public static TypeInfo deserialize(String base64) {
-        return deserialize(Bytes.read(Base64.getDecoder().decode(base64)));
+        return deserialize(Bytes.readVarIntBytes(Base64.getDecoder().decode(base64)));
     }
 
     public static TypeInfo from(Type info) {

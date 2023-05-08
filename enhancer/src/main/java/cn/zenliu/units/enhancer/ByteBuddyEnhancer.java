@@ -56,22 +56,21 @@ public class ByteBuddyEnhancer implements Plugin, EnhanceUtil {
         this.classRoot = classRoot.toPath();
         this.logger = logger;
         this.configurer = Configurer.load();
-        if (configurer.init()) {
+        if (!configurer.init()) {
             configurer.debug("user.dir: {}", Locator.USER_DIR());
-            configurer.error("missing or invalid configure file , Enhancer disabled");
+            configurer.error("missing or invalid configure file, Enhancer disabled");
             matcher = ElementMatchers.none();
             enhancers = Collections.emptyMap();
         } else {
-            var p = configurer.resolve(classRoot.toPath());
-            if (p) {
-                configurer.error("missing or invalid configure file ,Enhancers may disabled ");
+            if (!configurer.resolve(classRoot.toPath())) {
+                configurer.error("missing or invalid configure file for root {}, Enhancers may disabled", classRoot);
                 matcher = ElementMatchers.none();
                 enhancers = Collections.emptyMap();
                 return;
             }
             var root = configurer.parseRoot();
             if (!root.isEnabled()) {
-                configurer.error("Enhancers disabled by config file");
+                configurer.error("Enhancers disabled by config file:{}", configurer.locator().root());
                 matcher = ElementMatchers.none();
                 enhancers = Collections.emptyMap();
                 return;

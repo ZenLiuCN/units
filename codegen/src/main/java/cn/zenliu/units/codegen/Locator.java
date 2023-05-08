@@ -108,11 +108,15 @@ public class Locator {
     protected void initial(int deep, int up) {
         configs.clear();
         modules.clear();
-        var modules = locator(deep, up, buildConfigFilePredicate)
-                .stream()
+        var modules = (log.isDebugEnabled()
+                ? locator(deep, up, buildConfigFilePredicate).stream().peek(p -> log.debug("Found build config file: {}", p))
+                : locator(deep, up, buildConfigFilePredicate).stream())
                 .map(Path::getParent)
                 .collect(Collectors.toSet());
-        var settings = locator(deep, up, configFilePredicate);
+        var settings =
+                log.isDebugEnabled()
+                        ? locator(deep, up, configFilePredicate).stream().peek(p -> log.debug("Found config file: {}", p)).collect(Collectors.toSet())
+                        : locator(deep, up, configFilePredicate);
         for (var module : modules) {
             module = module.toAbsolutePath();
             var m = module.toString();
@@ -132,7 +136,7 @@ public class Locator {
             var prj = this.modules.first();
             log.debug("Try check project config under {}", prj);
             var rs = configs.get(this.modules.first());
-            if (rs != null && !rs.first().getParent().equals(prj)) {
+            if (rs != null && !rs.isEmpty() && !rs.first().getParent().equals(prj)) {
                 rs.clear(); //NO root configuration
             }
         }
@@ -156,10 +160,10 @@ public class Locator {
             if (this.root == null) return false;
             return root.toString().startsWith(this.root.toString());//simple check if a submodule of located config
         }
-        var roots = val.first();
-        log.debug("Found module {} root config at {} ", root, roots);
+        var newRoot = val.first();
+        log.debug("Resolved module {} config of {} ", root, newRoot);
         synchronized (lock) {
-            this.root = roots;
+            this.root = newRoot;
         }
         return true;
     }

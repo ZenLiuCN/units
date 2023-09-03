@@ -14,19 +14,21 @@
 License as `GPL v2 with classpath exception`.
 
 # Modules
-1. binary: a simple byte[] reader writer.
+1. ~~binary: a simple byte[] reader writer.~~ *removed in `0.1.x`* .
 2. classes: units method for class.
-3. reflect: units of enhance reflection.
-4. error: Domain error type and Result type.
-5. codegen: Basic components for compile time code generate or class enhance.
-6. processor: A framework for write CodeGenerator with APT process. JavaPoet required at classpath to enable processors.
-7. enhancer: A framework for bytecode enhance on compile time. ByteBuddy required, and also compile time plugin.
+3. codec: netty-buffer codec. *new in `0.1.x`* .
+4. conf: `com.typesafe:config` wrapper.  *new in `0.1.x`* .
+5. reflect: units of enhance reflection.
+6. error: Domain error type and Result type.
+7. codegen: Basic components for compile time code generate or class enhance.
+8. processor: A framework for write CodeGenerator with APT process. JavaPoet required at classpath to enable processors.
+9. enhancer: A framework for bytecode enhance on compile time. ByteBuddy required, and also compile time plugin.
 
 # Processor
 1. Requires [JavaPoet](https://github.com/square/javapoet) to run;
 2. Requires [slf4j-api](https://www.qos.ch/) to run;
-3. Property `process.debug` to enable Locator debug print;
-4. Properties `process.properites` to config processors;
+3. Property `debug` to enable Locator debug print;
+4. HOCON `codegen.conf` to config processors;
 # Enhancer
 1. Requires [ByteBuddy](https://bytebuddy.net/) to run; 
 2. Requires [slf4j-api](https://www.qos.ch/) to run;
@@ -58,8 +60,8 @@ License as `GPL v2 with classpath exception`.
         </configuration>
     </plugin>
     ```
-4. Property `enhance.debug` to enable Locator debug print;
-5. Properties `enhance.properites` to config processors;
+4. Property `debug` to enable Locator debug print;
+5. HOCON `codegen.conf` to config processors;
 # Reflect
 1. Requires [Caffeine](https://github.com/ben-manes/caffeine) to run.
 # Note

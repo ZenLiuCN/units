@@ -17,7 +17,6 @@ package cn.zenliu.units.enhancer;
 
 import cn.zenliu.classes.Classes;
 import cn.zenliu.units.codegen.Configure;
-import lombok.var;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
@@ -66,20 +65,20 @@ public interface Configurer extends Configure {
     class DefaultImpl extends DefaultConfigure implements Configurer {
 
         public DefaultImpl() {
-            super("enhance.properties");
+            super("codegen.conf");
         }
 
         @Override
         public Map<ElementMatcher.Junction<TypeDescription>, SortedSet<Enhancer>> enhancers(EnhanceUtil u) {
             assert root != null;
             if (!root.isEnabled()) return Collections.emptyMap();
-            var classes = root.readString("enhancers").orElse(null);
+            var classes = root.readStrings("enhancers").orElse(null);
             if (classes == null) {
                 error("Missing properties key 'enhancers', none of CodeGenerator will be used");
                 return Collections.emptyMap();
             }
             var m = new HashMap<ElementMatcher.Junction<TypeDescription>, SortedSet<Enhancer>>();
-            for (String name : classes.split(",")) {
+            for (String name : classes) {
                 var enh = Classes.loadClass(Enhancer.class, name.trim());
                 var set = m.computeIfAbsent(enh.matches(u), $ -> new TreeSet<>());
                 set.add(enh);

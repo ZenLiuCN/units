@@ -20,7 +20,6 @@ import cn.zenliu.units.codegen.Configure;
 import cn.zenliu.units.codegen.Generated;
 import cn.zenliu.units.processor.Desc;
 import com.squareup.javapoet.AnnotationSpec;
-import lombok.var;
 
 import javax.annotation.Nullable;
 import javax.annotation.processing.Processor;

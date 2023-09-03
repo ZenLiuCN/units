@@ -16,7 +16,6 @@
 package cn.zenliu.classes;
 
 import lombok.SneakyThrows;
-import lombok.var;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

@@ -15,9 +15,9 @@
 
 package cn.zenliu.units.enhancer;
 
+import cn.zenliu.units.enhancer.make.Compute;
 import cn.zenliu.units.enhancer.make.Make;
-import lombok.Value;
-import lombok.experimental.Accessors;
+import cn.zenliu.units.enhancer.make.Manual;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.field.FieldDescription;
 import net.bytebuddy.description.method.MethodDescription;
@@ -33,19 +33,12 @@ import java.util.stream.Stream;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
-/**
- * An enhance context for each type processing.
- *
- * @author Zen.Liu
- * @since 2023-05-06
- */
-@Value(staticConstructor = "of")
-@Accessors(fluent = true)
-public class Context {
-    TypeDescription type;
-    List<DynamicType.Builder<?>> gen;
-    ClassFileLocator locator;
 
+public record Context(
+        TypeDescription type,
+        List<DynamicType.Builder<?>> gen,
+        ClassFileLocator locator
+) {
     public Stream<FieldDescription.InDefinedShape> fields() {
         return type.getDeclaredFields().stream();
     }
@@ -83,6 +76,7 @@ public class Context {
     public Make.MethodMake declareMethod(String name) {
         return Make.method().declaringClass(type).name(Objects.requireNonNull(name));
     }
+
     public Make.MethodMake declareConstructor() {
         return Make.method().declaringClass(type).name(MethodDescription.CONSTRUCTOR_INTERNAL_NAME);
     }
@@ -91,4 +85,15 @@ public class Context {
         return Make.field().declaringClass(type);
     }
 
+    public Manual manual() {
+        return new Manual();
+    }
+
+    public Compute compute(MethodDescription method) {
+        return new Compute(type, method);
+    }
+
+    public Compute compute(TypeDescription type, MethodDescription method) {
+        return new Compute(type, method);
+    }
 }

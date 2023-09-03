@@ -18,7 +18,7 @@ package cn.zenliu.units.processor.unit;
 import cn.zenliu.units.processor.BaseUtil;
 import cn.zenliu.units.processor.util.Projection;
 import com.squareup.javapoet.*;
-import lombok.var;
+
 import org.jetbrains.annotations.Nullable;
 
 import javax.lang.model.element.ExecutableElement;

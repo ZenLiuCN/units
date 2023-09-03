@@ -24,9 +24,11 @@
         <module>processor</module>
         <module>classes</module>
         <module>codegen</module>
-        <module>binary</module>
-        <module>enhancer</module><module>reflect</module>
+        <module>codec</module>
+        <module>enhancer</module>
+        <module>reflect</module>
         <module>bom</module>
+        <module>conf</module>
     </modules>
 
 
@@ -34,7 +36,7 @@
         <!--//region Configuration -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>8</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.main.skip>false</maven.main.skip>
@@ -78,6 +80,7 @@
         <versions.caffeine>2.9.3</versions.caffeine>
         <versions.javapoet>1.13.0</versions.javapoet>
         <versions.byte-buddy>1.14.4</versions.byte-buddy>
+        <versions.netty>4.1.94.Final</versions.netty>
         <!--//endregion -->
 
         <module.name>units</module.name>
@@ -144,6 +147,16 @@
             <!--//endregion -->
             <!--//region Components -->
             <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-buffer</artifactId>
+                <version>${versions.netty}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.typesafe</groupId>
+                <artifactId>config</artifactId>
+                <version>${versions.typesafe-config}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${versions.caffeine}</version>
@@ -168,6 +181,18 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${versions.junit5}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.4.7</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.testing.compile</groupId>
+                <artifactId>compile-testing</artifactId>
+                <version>0.21.0</version>
                 <scope>test</scope>
             </dependency>
             <!--//endregion -->
@@ -213,8 +238,8 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
-                    <configuration>
-                        <compilerArgs>
+                    <configuration combine.self="override">
+                        <compilerArgs combine.children="append">
                             <arg>-parameters</arg>
                         </compilerArgs>
                     </configuration>

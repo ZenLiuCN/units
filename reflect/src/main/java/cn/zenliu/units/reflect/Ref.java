@@ -1,44 +1,166 @@
-/*
- * Source of units
- * Copyright (C) 2023.  Zen.Liu
- *
- * SPDX-License-Identifier: GPL-2.0-only WITH Classpath-exception-2.0"
- *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; version 2.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * Class Path Exception
- * Linking this library statically or dynamically with other modules is making a combined work based on this library. Thus, the terms and conditions of the GNU General Public License cover the whole combination.
- *  As a special exception, the copyright holders of this library give you permission to link this library with independent modules to produce an executable, regardless of the license terms of these independent modules, and to copy and distribute the resulting executable under terms of your choice, provided that you also meet, for each linked independent module, the terms and conditions of the license of that module. An independent module is a module which is not derived from or based on this library. If you modify this library, you may extend this exception to your version of the library, but you are not obligated to do so. If you do not wish to do so, delete this exception statement from your version.
- */
-
 package cn.zenliu.units.reflect;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import lombok.var;
+import lombok.experimental.UtilityClass;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * New Ref
+ * Ref port from other project
  *
  * @author Zen.Liu
- * @since 2022-12-30
+ * @since 2023-07-14
  */
-
-@SuppressWarnings({"unchecked", "unused", "SameParameterValue"})
+@SuppressWarnings({"unchecked", "unused"})
 public interface Ref<E> {
     E element();
+
+    //region Lazy
+    final class Lazy<T> {
+        private volatile T v;
+        private volatile Supplier<T> s;
+
+        public T get() {
+            if (s != null) synchronized (this) {
+                if (v != null) return v;
+                v = s.get();
+                s = null;
+            }
+            return v;
+        }
+
+        public Lazy(Supplier<T> s) {
+            this.s = s;
+        }
+
+    }
+
+    final class LazyInt32 {
+        private volatile int v;
+        private volatile IntSupplier s;
+
+        public int get() {
+            if (s != null) synchronized (this) {
+                if (s == null) return v;
+                v = s.getAsInt();
+                s = null;
+            }
+            return v;
+        }
+
+        public LazyInt32(IntSupplier s) {
+            this.s = s;
+        }
+
+        //@formatter:off
+        public boolean eq(int v) {
+            return this.get() == v;
+        }
+
+        public boolean ne(int v) {
+            return this.get() != v;
+        }
+
+        public boolean gt(int v) {
+            return this.get() > v;
+        }
+
+        public boolean lt(int v) {
+            return this.get() < v;
+        }
+
+        public boolean ge(int v) {
+            return this.get() >= v;
+        }
+
+        public boolean le(int v) {
+            return this.get() <= v;
+        }
+        //@formatter:on
+
+    }
+
+    final class LazyInt64 {
+        private volatile long v;
+        private volatile LongSupplier s;
+
+        public long get() {
+            if (s != null) synchronized (this) {
+                if (s == null) return v;
+                v = s.getAsLong();
+                s = null;
+            }
+            return v;
+        }
+
+        public LazyInt64(LongSupplier s) {
+            this.s = s;
+        }
+
+        //@formatter:off
+        public boolean eq(long v) {
+            return this.get() == v;
+        }
+
+        public boolean ne(long v) {
+            return this.get() != v;
+        }
+
+        public boolean gt(long v) {
+            return this.get() > v;
+        }
+
+        public boolean lt(long v) {
+            return this.get() < v;
+        }
+
+        public boolean ge(long v) {
+            return this.get() >= v;
+        }
+
+        public boolean le(long v) {
+            return this.get() <= v;
+        }
+        //@formatter:on
+
+    }
+
+    final class LazyBool {
+        private volatile boolean v;
+        private volatile BooleanSupplier s;
+
+        public boolean get() {
+            if (s != null) synchronized (this) {
+                if (s == null) return v;
+                v = s.getAsBoolean();
+                s = null;
+            }
+            return v;
+        }
+
+        public LazyBool(BooleanSupplier s) {
+            this.s = s;
+        }
+
+
+    }
 
     static LazyInt32 int32(IntSupplier s) {
         return new LazyInt32(s);
@@ -56,8 +178,1560 @@ public interface Ref<E> {
         return new Lazy<>(s);
     }
 
+    //endregion
+
+    @UtilityClass
+    final class $ {
+        @Getter
+        @Accessors(fluent = true)
+        @AllArgsConstructor(staticName = "of")
+        final static class Pair<T> {
+            final Object value;
+            final T element;
+        }
+
+        private static final long offset;
+        public static final int version;
+        public static final Map<Class<?>, Class<?>> BoxType;
+        public static final Map<Class<?>, Class<?>> UnboxType;
+
+        static class UnsafeAccess {
+            public static final boolean SUPPORTS_GET_AND_SET_REF = hasGetAndSetSupport();
+            public static final boolean SUPPORTS_GET_AND_ADD_LONG = hasGetAndAddLongSupport();
+            public static final sun.misc.Unsafe UNSAFE = getUnsafe();
+
+            public UnsafeAccess() {
+            }
+
+            @SuppressWarnings("RedundantCast")
+            private static sun.misc.Unsafe getUnsafe() {
+                sun.misc.Unsafe instance;
+                try {
+                    Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+                    field.setAccessible(true);
+                    instance = (sun.misc.Unsafe) field.get((Object) null);
+                } catch (Exception var4) {
+                    try {
+                        Constructor<sun.misc.Unsafe> c = sun.misc.Unsafe.class.getDeclaredConstructor();
+                        c.setAccessible(true);
+                        instance = (sun.misc.Unsafe) c.newInstance();
+                    } catch (Exception var3) {
+                        throw new RuntimeException(var3);
+                    }
+                }
+
+                return instance;
+            }
+
+            private static boolean hasGetAndSetSupport() {
+                try {
+                    sun.misc.Unsafe.class.getMethod("getAndSetObject", Object.class, Long.TYPE, Object.class);
+                    return true;
+                } catch (Exception var1) {
+                    return false;
+                }
+            }
+
+            private static boolean hasGetAndAddLongSupport() {
+                try {
+                    sun.misc.Unsafe.class.getMethod("getAndAddLong", Object.class, Long.TYPE, Long.TYPE);
+                    return true;
+                } catch (Exception var1) {
+                    return false;
+                }
+            }
+
+            public static long fieldOffset(Class<?> clz, String fieldName) throws RuntimeException {
+                try {
+                    return UNSAFE.objectFieldOffset(clz.getDeclaredField(fieldName));
+                } catch (NoSuchFieldException var3) {
+                    throw new RuntimeException(var3);
+                }
+            }
+        }
+
+        static {
+            class AccessibleObjectLayout {
+                static final private String ACCESS_PERMISSION = "";
+                boolean override;
+            }
+            offset = UnsafeAccess.fieldOffset(AccessibleObjectLayout.class, "override");
+            var v = System.getProperty("java.version");
+            if (v.startsWith("1."))
+                version = Integer.parseInt(v.substring(2, 3));
+            else
+                version = Integer.parseInt(v.substring(0, v.indexOf(".")));
+
+            {
+                UnboxType = new HashMap<Class<?>, Class<?>>() {{
+                    put(Void.class, Void.TYPE);
+                    put(Boolean.class, Boolean.TYPE);
+                    put(Integer.class, Integer.TYPE);
+                    put(Short.class, Short.TYPE);
+                    put(Byte.class, Byte.TYPE);
+                    put(Long.class, Long.TYPE);
+                    put(Character.class, Character.TYPE);
+                    put(Float.class, Float.TYPE);
+                    put(Double.class, Double.TYPE);
+                }};
+            }
+            {
+                BoxType = new HashMap<Class<?>, Class<?>>() {{
+                    put(Void.class, Void.TYPE);
+                    put(Boolean.TYPE, Boolean.class);
+                    put(Integer.TYPE, Integer.class);
+                    put(Short.TYPE, Short.class);
+                    put(Byte.TYPE, Byte.class);
+                    put(Long.TYPE, Long.class);
+                    put(Character.TYPE, Character.class);
+                    put(Float.TYPE, Float.class);
+                    put(Double.TYPE, Double.class);
+                }};
+            }
+
+        }
+
+        /**
+         * @param c AccessibleObject
+         * @return accessible type
+         */
+        public static <T extends AccessibleObject> T access(T c) {
+            try {
+                if (c == null) return null;
+                c.setAccessible(true);
+                return c;
+            } catch (Exception e) {
+                UnsafeAccess.UNSAFE.putBooleanVolatile(c, offset, true);
+                return c;
+            }
+        }
 
 
+        @SneakyThrows
+        static Object invoke(Method m, Object self, Object... param) {
+            return m.invoke(self, param);
+        }
+
+        @SneakyThrows
+        static Object invoke(MethodHandle m, Object self, Object... param) {
+            return m.bindTo(self).invokeWithArguments(param);
+        }
+
+        @SneakyThrows
+        static Class<?> forName(String fqn) {
+            return Class.forName(fqn);
+        }
+
+        @SneakyThrows
+        static Method declared(Class<?> type, String name, Class<?>... param) {
+            return type.getDeclaredMethod(name, param);
+        }
+
+        @SneakyThrows
+        static Field declaredField(Class<?> type, String name) {
+            return type.getDeclaredField(name);
+        }
+
+        @SneakyThrows
+        static Method declaredMethod0(Class<?> type, String name, Class<?>... parameters) {
+            for (var f : Class$getDeclaredMethods0.get().apply(type)) {
+                if (f.getName().equals(name) && Arrays.equals(f.getParameterTypes(), parameters)) {
+                    return access(f);
+                }
+            }
+            throw new NoSuchMethodException(type.toString() + "#" + name + "" + Arrays.toString(parameters));
+        }
+
+        @SneakyThrows
+        static Field declaredField0(Class<?> type, String name) {
+            for (var f : Class$getDeclaredFields0.get().apply(type)) {
+                if (f.getName().equals(name)) {
+                    return access(f);
+                }
+            }
+            throw new NoSuchFieldException(type.toString() + "#" + name);
+        }
+
+        /**
+         * @param type  the class
+         * @param param constructor parameters
+         * @return the find Constructor, or throw error
+         */
+        @SneakyThrows
+        public static Constructor<?> declared(Class<?> type, Class<?>... param) {
+            return type.getDeclaredConstructor(param);
+        }
+
+        @SuppressWarnings("SpellCheckingInspection")
+        @SneakyThrows
+        public static MethodHandle unreflect(MethodHandles.Lookup lookup, Method m) {
+            return lookup.unreflect(m);
+        }
+
+        @SuppressWarnings("SpellCheckingInspection")
+        @SneakyThrows
+        public static MethodHandle unreflect(Method m) {
+            return lookup.unreflect(m);
+        }
+
+
+        @SuppressWarnings("rawtypes")
+        @SneakyThrows
+        public static <T> T instance(Constructor constructor, Object... args) {
+            return (T) constructor.newInstance(args);
+        }
+
+        Lazy<Function<Class<?>, MethodHandles.Lookup>> Lookup$Constructor = lazy(() -> {
+            var m = access(
+                    version < 14 ? declared(MethodHandles.Lookup.class, Class.class, int.class)
+                            //checked in OpenJDK repository changed in
+                            // https://github.com/openjdk/jdk16/releases/tag/jdk-14-ga
+                            : declared(MethodHandles.Lookup.class, Class.class, Class.class, int.class)
+            );
+            Objects.requireNonNull(m);
+            var mode = (
+                    Modifier.PUBLIC
+                    | Modifier.PRIVATE
+                    | Modifier.PROTECTED
+                    | Modifier.STATIC //PACKAGE
+                    | (version >= (9) ? Modifier.STATIC << 1 : 0)// MODULE 9+
+                    | (version >= (9) ? Modifier.STATIC << 2 : 0) //UNCONDITIONAL 9+
+                    | (version >= (16) ? Modifier.STATIC << 3 : 0) //ORIGINAL 16+
+            );
+            return x -> (MethodHandles.Lookup) instance(m, x, null, mode);
+        });
+        MethodHandles.Lookup lookup = Lookup$Constructor.get().apply(Ref.class);
+        //region 9+
+        Lazy<Function<Class<?>, Object>> Class$getModule = lazy(() -> {
+            if (version <= 8) return x -> null;
+            var m = Objects.requireNonNull(access(declared(Class.class, "getModule")));
+            var h = unreflect(m);
+            return x -> invoke(h, x);
+        });
+
+        Lazy<BiConsumer<String, Object>> Module$implAddExportsOrOpens = lazy(() -> {
+            if (version <= (8)) return (a, b) -> {
+            };
+            var cls = forName("java.lang.Module");
+//            var m = declared(cls, "implAddExportsOrOpens", void.class, String.class, cls, boolean.class, boolean.class);
+            var m = declaredMethod0(cls, "implAddExportsOrOpens", String.class, cls, boolean.class, boolean.class);
+//            var everyone = declaredField(cls, "EVERYONE_MODULE");
+            var everyone = getter(declaredField0(cls, "EVERYONE_MODULE")).invoke();
+            var h = unreflect(m);
+            return (pn, mod) -> invoke(h, mod, pn, everyone, true, true);
+        });
+
+        Lazy<Predicate<Object>> Module$isNamed = lazy(() -> {
+            if (version <= (8)) return x -> false;
+            var m = declared(forName("java.lang.Module"), "isNamed", boolean.class);
+            var h = unreflect(m);
+            return x -> (boolean) invoke(h, x);
+        });
+        public static final LazyBool modular = bool(() -> {
+            if ($.version <= 8) return false;
+            return Module$isNamed.get().test(Class$getModule.get().apply(Ref.class));
+        });
+        //endregion
+        //region 12+
+        Lazy<UnaryOperator<Field>> Field$copy = lazy(() -> {
+            var copy = access(declared(Field.class, "copy"));
+            assert copy != null;
+            var h = unreflect(copy);
+            return x -> access((Field) invoke(h, x));
+        });
+        Lazy<UnaryOperator<Method>> Method$copy = lazy(() -> {
+            var copy = access(declared(Method.class, "copy"));
+            var h = unreflect(copy);
+            return x -> access((Method) invoke(h, x));
+        });
+        Lazy<UnaryOperator<Constructor<?>>> Constructor$Copy = lazy(() -> {
+            var copy = access(declared(Constructor.class, "copy"));
+            var h = unreflect(copy);
+            return x -> access((Constructor<?>) invoke(h, x));
+        });
+        Lazy<Function<Class<?>, Field[]>> Class$getDeclaredFields0 = lazy(() -> {
+            var m = access(declared(Class.class, "getDeclaredFields0", boolean.class));
+            var h = unreflect(m);
+            var copy = Field$copy.get();
+            return x -> {
+                var f = (Field[]) invoke(h, x, false);
+                for (int i = 0; i < f.length; i++) {
+                    f[i] = copy.apply(f[i]);
+                }
+                return f;
+            };
+        });
+        Lazy<Function<Class<?>, Method[]>> Class$getDeclaredMethods0 = lazy(() -> {
+            var m = access(declared(Class.class, "getDeclaredMethods0", boolean.class));
+            var h = unreflect(m);
+            var copy = Method$copy.get();
+            return x -> {
+                var f = (Method[]) invoke(h, x, false);
+                for (int i = 0; i < f.length; i++) {
+                    f[i] = copy.apply(f[i]);
+                }
+                return f;
+            };
+        });
+        Lazy<Function<Class<?>, Class<?>[]>> Class$getDeclaredClasses0 = lazy(() -> {
+            var m = access(declared(Class.class, "getDeclaredClasses0"));
+            var h = unreflect(m);
+            return x -> {
+                try {
+                    return (Class<?>[]) h.bindTo(x).invoke();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            };
+        });
+        Lazy<Function<Class<?>, Constructor<?>[]>> Class$getDeclaredConstructors0 = lazy(() -> {
+            var m = access(declared(Class.class, "getDeclaredConstructors0", boolean.class));
+            var h = unreflect(m);
+            var copy = Constructor$Copy.get();
+            return x -> {
+                var f = (Constructor<?>[]) invoke(h, x, false);
+                for (int i = 0; i < f.length; i++) {
+                    f[i] = copy.apply(f[i]);
+                }
+                return f;
+            };
+        });
+
+        //endregion
+
+        /**
+         * open module for everyone
+         *
+         * @param target target class in module
+         * @param pn     package names
+         */
+        public static void openModules(Class<?> target, String... pn) {
+            if (version <= 8) return;
+            var module = Class$getModule.get().apply(target);
+            for (String s : pn) {
+                Module$implAddExportsOrOpens.get().accept(s, module);
+            }
+        }
+
+        //region Caches
+        static final Cache<String, Class<?>> classes = Caffeine.newBuilder()
+                .initialCapacity(32)
+                .maximumSize(512)
+                .weakValues()
+                .expireAfterAccess(Duration.ofSeconds(60))
+                .build();
+        static final LoadingCache<Class<?>, Method[]> methods = Caffeine.newBuilder()
+                .initialCapacity(32)
+                .maximumSize(512)
+                .weakKeys()
+                .expireAfterAccess(Duration.ofSeconds(60))
+                .build($::findMethods);
+        static final LoadingCache<Class<?>, Field[]> fields = Caffeine.newBuilder()
+                .initialCapacity(32)
+                .maximumSize(512)
+                .weakKeys()
+                .expireAfterAccess(Duration.ofSeconds(60))
+                .build($::findFields);
+        static final LoadingCache<Class<?>, Constructor<?>[]> constructors = Caffeine.newBuilder()
+                .initialCapacity(32)
+                .maximumSize(512)
+                .weakKeys()
+                .expireAfterAccess(Duration.ofSeconds(60))
+                .build($::findConstructors);
+        //endregion
+
+        //region Finders
+        static Method[] findMethods(Class<?> type) {
+            if (version >= 12) {
+                return Class$getDeclaredMethods0.get().apply(type);
+            }
+            return type.getDeclaredMethods();
+        }
+
+        static Field[] findFields(Class<?> type) {
+            if (version >= 12) {
+                return Class$getDeclaredFields0.get().apply(type);
+            }
+            return type.getDeclaredFields();
+        }
+
+        static Constructor<?>[] findConstructors(Class<?> type) {
+            if (version >= 12) {
+                return Class$getDeclaredConstructors0.get().apply(type);
+            }
+            return type.getDeclaredConstructors();
+        }
+
+        static Field find(Class<?> declared, String name, Class<?> type) {
+            for (var v : fields.get(declared)) {
+                if (v.getName().equals(name)) {
+                    if (type == null || type == v.getType()) return v;
+                }
+            }
+            return null;
+        }
+
+        static Method find(Class<?> declared, String name, Class<?> returnType, Class<?>... parameters) {
+            for (var v : methods.get(declared)) {
+                if (v.getName().equals(name) && Arrays.equals(v.getParameterTypes(), parameters)) {
+                    if (returnType == null || returnType == v.getReturnType()) return v;
+                }
+            }
+            return null;
+        }
+
+        static Constructor<?> find(Class<?> declared, Class<?>... parameters) {
+            for (var v : constructors.get(declared)) {
+                if (Arrays.equals(v.getParameterTypes(), parameters)) {
+                    return v;
+                }
+            }
+            return null;
+        }
+
+        //endregion
+        public static Method[] methods(Class<?> type) {
+            return methods.get(type);
+        }
+
+        public static Field[] fields(Class<?> type) {
+            return fields.get(type);
+        }
+
+        public static Constructor<?>[] constructors(Class<?> type) {
+            return constructors.get(type);
+        }
+
+        public static Class<?>[] declaredClasses(Class<?> type) {
+            return ($.version >= 9 ? $.Class$getDeclaredClasses0.get().apply(type) : type.getDeclaredClasses());
+        }
+
+        //region Delegates
+        @SuppressWarnings({"unused", "SpellCheckingInspection"})
+        interface KClass {
+            /**
+             * public final class java.lang.Class<T>
+             **/
+            Lazy<Type> $Type = Ref.lazy(() -> Ref.type(Class.class));
+            /**
+             * private transient volatile java.lang.Class$AnnotationData java.lang.Class.annotationData
+             **/
+            Lazy<Handle> AnnotationDataGetter = Ref.lazy(() -> $Type.get().findGetter("annotationData", Ref.type("java.lang.Class.AnnotationData").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> AnnotationDataSetter = Ref.lazy(() -> $Type.get().findSetter("annotationData", Ref.type("java.lang.Class.AnnotationData").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient volatile sun.reflect.generics.repository.ClassRepository java.lang.Class.genericInfo
+             **/
+            Lazy<Handle> GenericInfoGetter = Ref.lazy(() -> $Type.get().findGetter("genericInfo", Ref.type("sun.reflect.generics.repository.ClassRepository").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> GenericInfoSetter = Ref.lazy(() -> $Type.get().findSetter("genericInfo", Ref.type("sun.reflect.generics.repository.ClassRepository").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient volatile java.util.Map<java.lang.String, T> java.lang.Class.enumConstantDirectory
+             **/
+            Lazy<Handle> EnumConstantDirectoryGetter = Ref.lazy(() -> $Type.get().findGetter("enumConstantDirectory", Map.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> EnumConstantDirectorySetter = Ref.lazy(() -> $Type.get().findSetter("enumConstantDirectory", Map.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private final java.lang.Class<?> java.lang.Class.componentType
+             **/
+            Lazy<Handle> ComponentTypeGetter = Ref.lazy(() -> $Type.get().findGetter("componentType", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> ComponentTypeSetter = Ref.lazy(() -> $Type.get().findSetter("componentType", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static final int java.lang.Class.ENUM
+             **/
+            Lazy<Handle.Alive> ENUMGetter = Ref.lazy(() -> $Type.get().findStaticGetter("ENUM", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle.Alive> ENUMSetter = Ref.lazy(() -> $Type.get().findStaticSetter("ENUM", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient volatile int java.lang.Class.classRedefinedCount
+             **/
+            Lazy<Handle> ClassRedefinedCountGetter = Ref.lazy(() -> $Type.get().findGetter("classRedefinedCount", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> ClassRedefinedCountSetter = Ref.lazy(() -> $Type.get().findSetter("classRedefinedCount", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private final java.lang.ClassLoader java.lang.Class.classLoader
+             **/
+            Lazy<Handle> ClassLoaderGetter = Ref.lazy(() -> $Type.get().findGetter("classLoader", ClassLoader.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> ClassLoaderSetter = Ref.lazy(() -> $Type.get().findSetter("classLoader", ClassLoader.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient volatile java.lang.reflect.Constructor<T> java.lang.Class.cachedConstructor
+             **/
+            Lazy<Handle> CachedConstructorGetter = Ref.lazy(() -> $Type.get().findGetter("cachedConstructor", Constructor.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> CachedConstructorSetter = Ref.lazy(() -> $Type.get().findSetter("cachedConstructor", Constructor.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient java.lang.Object java.lang.Class.classData
+             **/
+            Lazy<Handle> ClassDataGetter = Ref.lazy(() -> $Type.get().findGetter("classData", Object.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> ClassDataSetter = Ref.lazy(() -> $Type.get().findSetter("classData", Object.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient java.lang.Module java.lang.Class.module
+             **/
+            Lazy<Handle> ModuleGetter = Ref.lazy(() -> $Type.get().findGetter("module", $Type.get().element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> ModuleSetter = Ref.lazy(() -> $Type.get().findSetter("module", $Type.get().element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient volatile sun.reflect.annotation.AnnotationType java.lang.Class.annotationType
+             **/
+            Lazy<Handle> AnnotationTypeGetter = Ref.lazy(() -> $Type.get().findGetter("annotationType", Ref.type("sun.reflect.annotation.AnnotationType").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> AnnotationTypeSetter = Ref.lazy(() -> $Type.get().findSetter("annotationType", Ref.type("sun.reflect.annotation.AnnotationType").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static final int java.lang.Class.SYNTHETIC
+             **/
+            Lazy<Handle.Alive> SYNTHETICGetter = Ref.lazy(() -> $Type.get().findStaticGetter("SYNTHETIC", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle.Alive> SYNTHETICSetter = Ref.lazy(() -> $Type.get().findStaticSetter("SYNTHETIC", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient volatile java.lang.ref.SoftReference<java.lang.Class$ReflectionData<T>> java.lang.Class.reflectionData
+             **/
+            Lazy<Handle> ReflectionDataGetter = Ref.lazy(() -> $Type.get().findGetter("reflectionData", java.lang.ref.SoftReference.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> ReflectionDataSetter = Ref.lazy(() -> $Type.get().findSetter("reflectionData", java.lang.ref.SoftReference.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * transient java.lang.ClassValue$ClassValueMap java.lang.Class.classValueMap
+             **/
+            Lazy<Handle> ClassValueMapGetter = Ref.lazy(() -> $Type.get().findGetter("classValueMap", Ref.type("java.lang.ClassValue.ClassValueMap").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> ClassValueMapSetter = Ref.lazy(() -> $Type.get().findSetter("classValueMap", Ref.type("java.lang.ClassValue.ClassValueMap").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static final java.io.ObjectStreamField[] java.lang.Class.serialPersistentFields
+             **/
+            Lazy<Handle.Alive> SerialPersistentFieldsGetter = Ref.lazy(() -> $Type.get().findStaticGetter("serialPersistentFields", Ref.type("java.io.ObjectStreamField[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle.Alive> SerialPersistentFieldsSetter = Ref.lazy(() -> $Type.get().findStaticSetter("serialPersistentFields", Ref.type("java.io.ObjectStreamField[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient volatile T[] java.lang.Class.enumConstants
+             **/
+            Lazy<Handle> EnumConstantsGetter = Ref.lazy(() -> $Type.get().findGetter("enumConstants", Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> EnumConstantsSetter = Ref.lazy(() -> $Type.get().findSetter("enumConstants", Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static final int java.lang.Class.ANNOTATION
+             **/
+            Lazy<Handle.Alive> ANNOTATIONGetter = Ref.lazy(() -> $Type.get().findStaticGetter("ANNOTATION", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle.Alive> ANNOTATIONSetter = Ref.lazy(() -> $Type.get().findStaticSetter("ANNOTATION", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient java.lang.String java.lang.Class.name
+             **/
+            Lazy<Handle> NameGetter = Ref.lazy(() -> $Type.get().findGetter("name", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> NameSetter = Ref.lazy(() -> $Type.get().findSetter("name", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static jdk.internal.reflect.ReflectionFactory java.lang.Class.reflectionFactory
+             **/
+            Lazy<Handle.Alive> ReflectionFactoryGetter = Ref.lazy(() -> $Type.get().findStaticGetter("reflectionFactory", Ref.type("jdk.internal.reflect.ReflectionFactory").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle.Alive> ReflectionFactorySetter = Ref.lazy(() -> $Type.get().findStaticSetter("reflectionFactory", Ref.type("jdk.internal.reflect.ReflectionFactory").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private transient java.lang.String java.lang.Class.packageName
+             **/
+            Lazy<Handle> PackageNameGetter = Ref.lazy(() -> $Type.get().findGetter("packageName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle> PackageNameSetter = Ref.lazy(() -> $Type.get().findSetter("packageName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static java.security.ProtectionDomain java.lang.Class.allPermDomain
+             **/
+            Lazy<Handle.Alive> AllPermDomainGetter = Ref.lazy(() -> $Type.get().findStaticGetter("allPermDomain", java.security.ProtectionDomain.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle.Alive> AllPermDomainSetter = Ref.lazy(() -> $Type.get().findStaticSetter("allPermDomain", java.security.ProtectionDomain.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static final java.lang.Class<?>[] java.lang.Class.EMPTY_CLASS_ARRAY
+             **/
+            Lazy<Handle.Alive> EMPTY_CLASS_ARRAYGetter = Ref.lazy(() -> $Type.get().findStaticGetter("EMPTY_CLASS_ARRAY", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            Lazy<Handle.Alive> EMPTY_CLASS_ARRAYSetter = Ref.lazy(() -> $Type.get().findStaticSetter("EMPTY_CLASS_ARRAY", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Module java.lang.Class.getModule()
+             **/
+            Lazy<Handle> GetModule = Ref.lazy(() -> $Type.get().handle("getModule", $Type.get().element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isSealed()
+             **/
+            Lazy<Handle> IsSealed = Ref.lazy(() -> $Type.get().handle("isSealed", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.net.URL java.lang.Class.getResource(java.lang.String)
+             **/
+            Lazy<Handle> GetResource = Ref.lazy(() -> $Type.get().handle("getResource", java.net.URL.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private boolean java.lang.Class.isLocalOrAnonymousClass()
+             **/
+            Lazy<Handle> IsLocalOrAnonymousClass = Ref.lazy(() -> $Type.get().handle("isLocalOrAnonymousClass", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isLocalClass()
+             **/
+            Lazy<Handle> IsLocalClass = Ref.lazy(() -> $Type.get().handle("isLocalClass", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isSynthetic()
+             **/
+            Lazy<Handle> IsSynthetic = Ref.lazy(() -> $Type.get().handle("isSynthetic", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.getCanonicalName()
+             **/
+            Lazy<Handle> GetCanonicalName = Ref.lazy(() -> $Type.get().handle("getCanonicalName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Method java.lang.Class.getMethod(java.lang.String,java.lang.Class<?>...) throws java.lang.NoSuchMethodException,java.lang.SecurityException
+             **/
+            Lazy<Handle> GetMethod = Ref.lazy(() -> $Type.get().handle("getMethod", Method.class, String.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Method[] java.lang.Class.privateGetDeclaredMethods(boolean)
+             **/
+            Lazy<Handle> PrivateGetDeclaredMethods = Ref.lazy(() -> $Type.get().handle("privateGetDeclaredMethods", Ref.type("java.lang.reflect.Method[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * java.util.List<java.lang.reflect.Method> java.lang.Class.getDeclaredPublicMethods(java.lang.String,java.lang.Class<?>...)
+             **/
+            Lazy<Handle> GetDeclaredPublicMethods = Ref.lazy(() -> $Type.get().handle("getDeclaredPublicMethods", List.class, String.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Field[] java.lang.Class.getDeclaredFields() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaredFields = Ref.lazy(() -> $Type.get().handle("getDeclaredFields", Ref.type("java.lang.reflect.Field[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.reflect.Constructor<T>[] java.lang.Class.getDeclaredConstructors0(boolean)
+             **/
+            Lazy<Handle> GetDeclaredConstructors0 = Ref.lazy(() -> $Type.get().handle("getDeclaredConstructors0", Ref.type("java.lang.reflect.Constructor[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public T java.lang.Class.cast(java.lang.Object)
+             **/
+            Lazy<Handle> Cast = Ref.lazy(() -> $Type.get().handle("cast", Object.class, Object.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native boolean java.lang.Class.isInstance(java.lang.Object)
+             **/
+            Lazy<Handle> IsInstance = Ref.lazy(() -> $Type.get().handle("isInstance", boolean.class, Object.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private boolean java.lang.Class.isDirectSubType(java.lang.Class<?>)
+             **/
+            Lazy<Handle> IsDirectSubType = Ref.lazy(() -> $Type.get().handle("isDirectSubType", boolean.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Method java.lang.Class.getEnclosingMethod() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetEnclosingMethod = Ref.lazy(() -> $Type.get().handle("getEnclosingMethod", Method.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native java.lang.Object[] java.lang.Class.getSigners()
+             **/
+            Lazy<Handle> GetSigners = Ref.lazy(() -> $Type.get().handle("getSigners", Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Constructor<T> java.lang.Class.getConstructor0(java.lang.Class<?>[],int) throws java.lang.NoSuchMethodException
+             **/
+            Lazy<Handle> GetConstructor0 = Ref.lazy(() -> $Type.get().handle("getConstructor0", Constructor.class, Ref.type("java.lang.Class[]").element(), int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Field[] java.lang.Class.privateGetPublicFields()
+             **/
+            Lazy<Handle> PrivateGetPublicFields = Ref.lazy(() -> $Type.get().handle("privateGetPublicFields", Ref.type("java.lang.reflect.Field[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native boolean java.lang.Class.isInterface()
+             **/
+            Lazy<Handle> IsInterface = Ref.lazy(() -> $Type.get().handle("isInterface", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.invoke.TypeDescriptor$OfField java.lang.Class.arrayType()
+             **/
+            Lazy<Handle> ArrayType = Ref.lazy(() -> $Type.get().handle("arrayType", Ref.type("java.lang.invoke.TypeDescriptor.OfField").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?> java.lang.Class.arrayType()
+             **/
+            Lazy<Handle> ArrayType1 = Ref.lazy(() -> $Type.get().handle("arrayType", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static java.lang.Class<?> java.lang.Class.toClass(java.lang.reflect.Type)
+             **/
+            Lazy<Handle.Alive> ToClass = Ref.lazy(() -> $Type.get().findStatic("toClass", Class.class, java.lang.reflect.Type.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private boolean java.lang.Class.hasEnclosingMethodInfo()
+             **/
+            Lazy<Handle> HasEnclosingMethodInfo = Ref.lazy(() -> $Type.get().handle("hasEnclosingMethodInfo", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * java.security.ProtectionDomain java.lang.Class.protectionDomain()
+             **/
+            Lazy<Handle> ProtectionDomain = Ref.lazy(() -> $Type.get().handle("protectionDomain", java.security.ProtectionDomain.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public <U> java.lang.Class<? extends U> java.lang.Class.asSubclass(java.lang.Class<U>)
+             **/
+            Lazy<Handle> AsSubclass = Ref.lazy(() -> $Type.get().handle("asSubclass", Class.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Field java.lang.Class.getField(java.lang.String) throws java.lang.NoSuchFieldException,java.lang.SecurityException
+             **/
+            Lazy<Handle> GetField = Ref.lazy(() -> $Type.get().handle("getField", Field.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.descriptorString()
+             **/
+            Lazy<Handle> DescriptorString = Ref.lazy(() -> $Type.get().handle("descriptorString", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Constructor<T>[] java.lang.Class.privateGetDeclaredConstructors(boolean)
+             **/
+            Lazy<Handle> PrivateGetDeclaredConstructors = Ref.lazy(() -> $Type.get().handle("privateGetDeclaredConstructors", Ref.type("java.lang.reflect.Constructor[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Method[] java.lang.Class.privateGetPublicMethods()
+             **/
+            Lazy<Handle> PrivateGetPublicMethods = Ref.lazy(() -> $Type.get().handle("privateGetPublicMethods", Ref.type("java.lang.reflect.Method[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static native java.lang.Class<?> java.lang.Class.forName0(java.lang.String,boolean,java.lang.ClassLoader,java.lang.Class<?>) throws java.lang.ClassNotFoundException
+             **/
+            Lazy<Handle.Alive> ForName0 = Ref.lazy(() -> $Type.get().findStatic("forName0", Class.class, String.class, boolean.class, ClassLoader.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private boolean java.lang.Class.isTopLevelClass()
+             **/
+            Lazy<Handle> IsTopLevelClass = Ref.lazy(() -> $Type.get().handle("isTopLevelClass", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class$ReflectionData<T> java.lang.Class.newReflectionData(java.lang.ref.SoftReference<java.lang.Class$ReflectionData<T>>,int)
+             **/
+            Lazy<Handle> NewReflectionData = Ref.lazy(() -> $Type.get().handle("newReflectionData", Ref.type("java.lang.Class.ReflectionData").element(), java.lang.ref.SoftReference.class, int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private boolean java.lang.Class.isOpenToCaller(java.lang.String,java.lang.Class<?>)
+             **/
+            Lazy<Handle> IsOpenToCaller = Ref.lazy(() -> $Type.get().handle("isOpenToCaller", boolean.class, String.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.reflect.Method[] java.lang.Class.getDeclaredMethods0(boolean)
+             **/
+            Lazy<Handle> GetDeclaredMethods0 = Ref.lazy(() -> $Type.get().handle("getDeclaredMethods0", Ref.type("java.lang.reflect.Method[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.RecordComponent[] java.lang.Class.getRecordComponents()
+             **/
+            Lazy<Handle> GetRecordComponents = Ref.lazy(() -> $Type.get().handle("getRecordComponents", Ref.type("java.lang.reflect.RecordComponent[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?> java.lang.Class.getComponentType()
+             **/
+            Lazy<Handle> GetComponentType = Ref.lazy(() -> $Type.get().handle("getComponentType", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native boolean java.lang.Class.isArray()
+             **/
+            Lazy<Handle> IsArray = Ref.lazy(() -> $Type.get().handle("isArray", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native boolean java.lang.Class.isPrimitive()
+             **/
+            Lazy<Handle> IsPrimitive = Ref.lazy(() -> $Type.get().handle("isPrimitive", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isAnnotation()
+             **/
+            Lazy<Handle> IsAnnotation = Ref.lazy(() -> $Type.get().handle("isAnnotation", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Constructor<?>[] java.lang.Class.getDeclaredConstructors() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaredConstructors = Ref.lazy(() -> $Type.get().handle("getDeclaredConstructors", Ref.type("java.lang.reflect.Constructor[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isAnnotationPresent(java.lang.Class<? extends java.lang.annotation.Annotation>)
+             **/
+            Lazy<Handle> IsAnnotationPresent = Ref.lazy(() -> $Type.get().handle("isAnnotationPresent", boolean.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * sun.reflect.annotation.AnnotationType java.lang.Class.getAnnotationType()
+             **/
+            Lazy<Handle> GetAnnotationType = Ref.lazy(() -> $Type.get().handle("getAnnotationType", Ref.type("sun.reflect.annotation.AnnotationType").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static native void java.lang.Class.registerNatives()
+             **/
+            Lazy<Handle.Alive> RegisterNatives = Ref.lazy(() -> $Type.get().findStatic("registerNatives", void.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class$ReflectionData<T> java.lang.Class.reflectionData()
+             **/
+            Lazy<Handle> ReflectionData = Ref.lazy(() -> $Type.get().handle("reflectionData", Ref.type("java.lang.Class.ReflectionData").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native boolean java.lang.Class.isAssignableFrom(java.lang.Class<?>)
+             **/
+            Lazy<Handle> IsAssignableFrom = Ref.lazy(() -> $Type.get().handle("isAssignableFrom", boolean.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Method[] java.lang.Class.getDeclaredMethods() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaredMethods = Ref.lazy(() -> $Type.get().handle("getDeclaredMethods", Ref.type("java.lang.reflect.Method[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?> java.lang.Class.getDeclaringClass() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaringClass = Ref.lazy(() -> $Type.get().handle("getDeclaringClass", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.String java.lang.Class.getCanonicalName0()
+             **/
+            Lazy<Handle> GetCanonicalName0 = Ref.lazy(() -> $Type.get().handle("getCanonicalName0", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.String java.lang.Class.getSimpleBinaryName()
+             **/
+            Lazy<Handle> GetSimpleBinaryName = Ref.lazy(() -> $Type.get().handle("getSimpleBinaryName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.toGenericString()
+             **/
+            Lazy<Handle> ToGenericString = Ref.lazy(() -> $Type.get().handle("toGenericString", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static java.lang.reflect.Field[] java.lang.Class.copyFields(java.lang.reflect.Field[])
+             **/
+            Lazy<Handle.Alive> CopyFields = Ref.lazy(() -> $Type.get().findStatic("copyFields", Ref.type("java.lang.reflect.Field[]").element(), Ref.type("java.lang.reflect.Field[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?>[] java.lang.Class.getClasses()
+             **/
+            Lazy<Handle> GetClasses = Ref.lazy(() -> $Type.get().handle("getClasses", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * java.lang.Object java.lang.Class.getClassData()
+             **/
+            Lazy<Handle> GetClassData = Ref.lazy(() -> $Type.get().handle("getClassData", Object.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class$AnnotationData java.lang.Class.annotationData()
+             **/
+            Lazy<Handle> AnnotationData = Ref.lazy(() -> $Type.get().handle("annotationData", Ref.type("java.lang.Class.AnnotationData").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.String java.lang.Class.methodToString(java.lang.String,java.lang.Class<?>[])
+             **/
+            Lazy<Handle> MethodToString = Ref.lazy(() -> $Type.get().handle("methodToString", String.class, String.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.invoke.TypeDescriptor$OfField java.lang.Class.componentType()
+             **/
+            Lazy<Handle> ComponentType = Ref.lazy(() -> $Type.get().handle("componentType", type("java.lang.invoke.TypeDescriptor.OfField").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?> java.lang.Class.componentType()
+             **/
+            Lazy<Handle> ComponentType1 = Ref.lazy(() -> $Type.get().handle("componentType", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public static java.lang.Class<?> java.lang.Class.forName(java.lang.String) throws java.lang.ClassNotFoundException
+             **/
+            Lazy<Handle.Alive> ForName = Ref.lazy(() -> $Type.get().findStatic("forName", Class.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public static java.lang.Class<?> java.lang.Class.forName(java.lang.Module,java.lang.String)
+             **/
+            Lazy<Handle.Alive> ForName1 = Ref.lazy(() -> $Type.get().findStatic("forName", Class.class, $Type.get().element(), String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public static java.lang.Class<?> java.lang.Class.forName(java.lang.String,boolean,java.lang.ClassLoader) throws java.lang.ClassNotFoundException
+             **/
+            Lazy<Handle.Alive> ForName2 = Ref.lazy(() -> $Type.get().findStatic("forName", Class.class, String.class, boolean.class, ClassLoader.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.Class<?>[] java.lang.Class.getPermittedSubclasses0()
+             **/
+            Lazy<Handle> GetPermittedSubclasses0 = Ref.lazy(() -> $Type.get().handle("getPermittedSubclasses0", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isRecord()
+             **/
+            Lazy<Handle> IsRecord = Ref.lazy(() -> $Type.get().handle("isRecord", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Constructor<T> java.lang.Class.getDeclaredConstructor(java.lang.Class<?>...) throws java.lang.NoSuchMethodException,java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaredConstructor = Ref.lazy(() -> $Type.get().handle("getDeclaredConstructor", Constructor.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private sun.reflect.generics.factory.GenericsFactory java.lang.Class.getFactory()
+             **/
+            Lazy<Handle> GetFactory = Ref.lazy(() -> $Type.get().handle("getFactory", Ref.type("sun.reflect.generics.factory.GenericsFactory").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.annotation.Annotation[] java.lang.Class.getAnnotations()
+             **/
+            Lazy<Handle> GetAnnotations = Ref.lazy(() -> $Type.get().handle("getAnnotations", Ref.type("java.lang.annotation.Annotation[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.Class<?> java.lang.Class.getNestHost0()
+             **/
+            Lazy<Handle> GetNestHost0 = Ref.lazy(() -> $Type.get().handle("getNestHost0", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Field java.lang.Class.getField0(java.lang.String)
+             **/
+            Lazy<Handle> GetField0 = Ref.lazy(() -> $Type.get().handle("getField0", Field.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * native void java.lang.Class.setSigners(java.lang.Object[])
+             **/
+            Lazy<Handle> SetSigners = Ref.lazy(() -> $Type.get().handle("setSigners", void.class, Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.String java.lang.Class.getSimpleName0()
+             **/
+            Lazy<Handle> GetSimpleName0 = Ref.lazy(() -> $Type.get().handle("getSimpleName0", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.security.ProtectionDomain java.lang.Class.getProtectionDomain0()
+             **/
+            Lazy<Handle> GetProtectionDomain0 = Ref.lazy(() -> $Type.get().handle("getProtectionDomain0", java.security.ProtectionDomain.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.Class<?> java.lang.Class.getDeclaringClass0()
+             **/
+            Lazy<Handle> GetDeclaringClass0 = Ref.lazy(() -> $Type.get().handle("getDeclaringClass0", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public <A extends java.lang.annotation.Annotation> A[] java.lang.Class.getDeclaredAnnotationsByType(java.lang.Class<A>)
+             **/
+            Lazy<Handle> GetDeclaredAnnotationsByType = Ref.lazy(() -> $Type.get().handle("getDeclaredAnnotationsByType", Ref.type("java.lang.annotation.Annotation[]").element(), Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static void java.lang.Class.addAll(java.util.Collection<java.lang.reflect.Field>,java.lang.reflect.Field[])
+             **/
+            Lazy<Handle.Alive> AddAll = Ref.lazy(() -> $Type.get().findStatic("addAll", void.class, Collection.class, Ref.type("java.lang.reflect.Field[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * java.lang.ClassLoader java.lang.Class.getClassLoader0()
+             **/
+            Lazy<Handle> GetClassLoader0 = Ref.lazy(() -> $Type.get().handle("getClassLoader0", ClassLoader.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.toString()
+             **/
+            Lazy<Handle> ToString = Ref.lazy(() -> $Type.get().handle("toString", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Type java.lang.Class.getGenericSuperclass()
+             **/
+            Lazy<Handle> GetGenericSuperclass = Ref.lazy(() -> $Type.get().handle("getGenericSuperclass", java.lang.reflect.Type.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * T[] java.lang.Class.getEnumConstantsShared()
+             **/
+            Lazy<Handle> GetEnumConstantsShared = Ref.lazy(() -> $Type.get().handle("getEnumConstantsShared", Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class<?> java.lang.Class.elementType()
+             **/
+            Lazy<Handle> ElementType = Ref.lazy(() -> $Type.get().handle("elementType", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * native byte[] java.lang.Class.getRawAnnotations()
+             **/
+            Lazy<Handle> GetRawAnnotations = Ref.lazy(() -> $Type.get().handle("getRawAnnotations", byte[][].class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.Class<?>[] java.lang.Class.getNestMembers0()
+             **/
+            Lazy<Handle> GetNestMembers0 = Ref.lazy(() -> $Type.get().handle("getNestMembers0", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.getName()
+             **/
+            Lazy<Handle> GetName = Ref.lazy(() -> $Type.get().handle("getName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * static java.lang.String java.lang.Class.typeVarBounds(java.lang.reflect.TypeVariable<?>)
+             **/
+            Lazy<Handle.Alive> TypeVarBounds = Ref.lazy(() -> $Type.get().findStatic("typeVarBounds", String.class, TypeVariable.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static java.lang.reflect.Method java.lang.Class.searchMethods(java.lang.reflect.Method[],java.lang.String,java.lang.Class<?>[])
+             **/
+            Lazy<Handle.Alive> SearchMethods = Ref.lazy(() -> $Type.get().findStatic("searchMethods", Method.class, Ref.type("java.lang.reflect.Method[]").element(), String.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static native boolean java.lang.Class.desiredAssertionStatus0(java.lang.Class<?>)
+             **/
+            Lazy<Handle.Alive> DesiredAssertionStatus0 = Ref.lazy(() -> $Type.get().findStatic("desiredAssertionStatus0", boolean.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native boolean java.lang.Class.isRecord0()
+             **/
+            Lazy<Handle> IsRecord0 = Ref.lazy(() -> $Type.get().handle("isRecord0", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.util.Optional<java.lang.constant.ClassDesc> java.lang.Class.describeConstable()
+             **/
+            Lazy<Handle> DescribeConstable = Ref.lazy(() -> $Type.get().handle("describeConstable", Optional.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isMemberClass()
+             **/
+            Lazy<Handle> IsMemberClass = Ref.lazy(() -> $Type.get().handle("isMemberClass", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.PublicMethods$MethodList java.lang.Class.getMethodsRecursive(java.lang.String,java.lang.Class<?>[],boolean)
+             **/
+            Lazy<Handle> GetMethodsRecursive = Ref.lazy(() -> $Type.get().handle("getMethodsRecursive", Ref.type("java.lang.PublicMethods.MethodList").element(), String.class, Ref.type("java.lang.Class[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.Object[] java.lang.Class.getEnclosingMethod0()
+             **/
+            Lazy<Handle> GetEnclosingMethod0 = Ref.lazy(() -> $Type.get().handle("getEnclosingMethod0", Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?>[] java.lang.Class.getPermittedSubclasses()
+             **/
+            Lazy<Handle> GetPermittedSubclasses = Ref.lazy(() -> $Type.get().handle("getPermittedSubclasses", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static <U> java.lang.reflect.Constructor<U>[] java.lang.Class.copyConstructors(java.lang.reflect.Constructor<U>[])
+             **/
+            Lazy<Handle.Alive> CopyConstructors = Ref.lazy(() -> $Type.get().findStatic("copyConstructors", Ref.type("java.lang.reflect.Constructor[]").element(), Ref.type("java.lang.reflect.Constructor[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.TypeVariable<java.lang.Class<T>>[] java.lang.Class.getTypeParameters()
+             **/
+            Lazy<Handle> GetTypeParameters = Ref.lazy(() -> $Type.get().handle("getTypeParameters", Ref.type("java.lang.reflect.TypeVariable[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static boolean java.lang.Class.arrayContentsEq(java.lang.Object[],java.lang.Object[])
+             **/
+            Lazy<Handle.Alive> ArrayContentsEq = Ref.lazy(() -> $Type.get().findStatic("arrayContentsEq", boolean.class, Ref.type("java.lang.Object[]").element(), Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Package java.lang.Class.getPackage()
+             **/
+            Lazy<Handle> GetPackage = Ref.lazy(() -> $Type.get().handle("getPackage", Package.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?> java.lang.Class.getNestHost()
+             **/
+            Lazy<Handle> GetNestHost = Ref.lazy(() -> $Type.get().handle("getNestHost", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?>[] java.lang.Class.getInterfaces()
+             **/
+            Lazy<Handle> GetInterfaces = Ref.lazy(() -> $Type.get().handle("getInterfaces", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class<?>[] java.lang.Class.getInterfaces(boolean)
+             **/
+            Lazy<Handle> GetInterfaces1 = Ref.lazy(() -> $Type.get().handle("getInterfaces", Ref.type("java.lang.Class[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.AnnotatedType[] java.lang.Class.getAnnotatedInterfaces()
+             **/
+            Lazy<Handle> GetAnnotatedInterfaces = Ref.lazy(() -> $Type.get().handle("getAnnotatedInterfaces", Ref.type("java.lang.reflect.AnnotatedType[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static java.lang.reflect.Method[] java.lang.Class.copyMethods(java.lang.reflect.Method[])
+             **/
+            Lazy<Handle.Alive> CopyMethods = Ref.lazy(() -> $Type.get().findStatic("copyMethods", Ref.type("java.lang.reflect.Method[]").element(), Ref.type("java.lang.reflect.Method[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public T java.lang.Class.newInstance() throws java.lang.InstantiationException,java.lang.IllegalAccessException
+             **/
+            Lazy<Handle> NewInstance = Ref.lazy(() -> $Type.get().handle("newInstance", Object.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.reflect.Field[] java.lang.Class.getDeclaredFields0(boolean)
+             **/
+            Lazy<Handle> GetDeclaredFields0 = Ref.lazy(() -> $Type.get().handle("getDeclaredFields0", Ref.type("java.lang.reflect.Field[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static jdk.internal.reflect.ReflectionFactory java.lang.Class.getReflectionFactory()
+             **/
+            Lazy<Handle.Alive> GetReflectionFactory = Ref.lazy(() -> $Type.get().findStatic("getReflectionFactory", Ref.type("jdk.internal.reflect.ReflectionFactory").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Field[] java.lang.Class.getFields() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetFields = Ref.lazy(() -> $Type.get().handle("getFields", Ref.type("java.lang.reflect.Field[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private sun.reflect.generics.repository.ClassRepository java.lang.Class.getGenericInfo()
+             **/
+            Lazy<Handle> GetGenericInfo = Ref.lazy(() -> $Type.get().handle("getGenericInfo", Ref.type("sun.reflect.generics.repository.ClassRepository").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public <A extends java.lang.annotation.Annotation> A java.lang.Class.getAnnotation(java.lang.Class<A>)
+             **/
+            Lazy<Handle> GetAnnotation = Ref.lazy(() -> $Type.get().handle("getAnnotation", Annotation.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public <A extends java.lang.annotation.Annotation> A java.lang.Class.getDeclaredAnnotation(java.lang.Class<A>)
+             **/
+            Lazy<Handle> GetDeclaredAnnotation = Ref.lazy(() -> $Type.get().handle("getDeclaredAnnotation", Annotation.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.getSimpleName()
+             **/
+            Lazy<Handle> GetSimpleName = Ref.lazy(() -> $Type.get().handle("getSimpleName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.getPackageName()
+             **/
+            Lazy<Handle> GetPackageName = Ref.lazy(() -> $Type.get().handle("getPackageName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Method[] java.lang.Class.getMethods() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetMethods = Ref.lazy(() -> $Type.get().handle("getMethods", Ref.type("java.lang.reflect.Method[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /** private static void java.lang.Class.checkPackageAccessForPermittedSubclasses(java.lang.SecurityManager,java.lang.ClassLoader,java.lang.Class<?>[]) **/
+            //Ref.Lazy<Ref.Handle.Alive> CheckPackageAccessForPermittedSubclasses=Ref.lazy(()->$Type.get().findStatic("checkPackageAccessForPermittedSubclasses",void.class,java.lang.SecurityManager.class,java.lang.ClassLoader.class,Ref.type("java.lang.Class[]").element()).orElseThrow(()->new IllegalStateException("No value present")));
+            /**
+             * public java.security.ProtectionDomain java.lang.Class.getProtectionDomain()
+             **/
+            Lazy<Handle> GetProtectionDomain = Ref.lazy(() -> $Type.get().handle("getProtectionDomain", java.security.ProtectionDomain.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.Class<?>[] java.lang.Class.getInterfaces0()
+             **/
+            Lazy<Handle> GetInterfaces0 = Ref.lazy(() -> $Type.get().handle("getInterfaces0", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.desiredAssertionStatus()
+             **/
+            Lazy<Handle> DesiredAssertionStatus = Ref.lazy(() -> $Type.get().handle("desiredAssertionStatus", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * native jdk.internal.reflect.ConstantPool java.lang.Class.getConstantPool()
+             **/
+            Lazy<Handle> GetConstantPool = Ref.lazy(() -> $Type.get().handle("getConstantPool", Ref.type("jdk.internal.reflect.ConstantPool").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?>[] java.lang.Class.getNestMembers()
+             **/
+            Lazy<Handle> GetNestMembers = Ref.lazy(() -> $Type.get().handle("getNestMembers", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * java.util.Map<java.lang.Class<? extends java.lang.annotation.Annotation>, java.lang.annotation.Annotation> java.lang.Class.getDeclaredAnnotationMap()
+             **/
+            Lazy<Handle> GetDeclaredAnnotationMap = Ref.lazy(() -> $Type.get().handle("getDeclaredAnnotationMap", Map.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * static native java.lang.Class<?> java.lang.Class.getPrimitiveClass(java.lang.String)
+             **/
+            Lazy<Handle.Alive> GetPrimitiveClass = Ref.lazy(() -> $Type.get().findStatic("getPrimitiveClass", Class.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Type[] java.lang.Class.getGenericInterfaces()
+             **/
+            Lazy<Handle> GetGenericInterfaces = Ref.lazy(() -> $Type.get().handle("getGenericInterfaces", Ref.type("java.lang.reflect.Type[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.ClassLoader java.lang.Class.getClassLoader()
+             **/
+            Lazy<Handle> GetClassLoader = Ref.lazy(() -> $Type.get().handle("getClassLoader", ClassLoader.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.String java.lang.Class.getSimpleBinaryName0()
+             **/
+            Lazy<Handle> GetSimpleBinaryName0 = Ref.lazy(() -> $Type.get().handle("getSimpleBinaryName0", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.annotation.Annotation[] java.lang.Class.getDeclaredAnnotations()
+             **/
+            Lazy<Handle> GetDeclaredAnnotations = Ref.lazy(() -> $Type.get().handle("getDeclaredAnnotations", Ref.type("java.lang.annotation.Annotation[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * boolean java.lang.Class.casAnnotationType(sun.reflect.annotation.AnnotationType,sun.reflect.annotation.AnnotationType)
+             **/
+            Lazy<Handle> CasAnnotationType = Ref.lazy(() -> $Type.get().handle("casAnnotationType", boolean.class, Ref.type("sun.reflect.annotation.AnnotationType").element(), Ref.type("sun.reflect.annotation.AnnotationType").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /** private void java.lang.Class.checkMemberAccess(java.lang.SecurityManager,int,java.lang.Class<?>,boolean) **/
+            //Ref.Lazy<Ref.Handle> CheckMemberAccess=Ref.lazy(()->$Type.get().handle("checkMemberAccess",void.class,java.lang.SecurityManager.class,int.class,java.lang.Class.class,boolean.class).orElseThrow(()->new IllegalStateException("No value present")));
+            /**
+             * public <A extends java.lang.annotation.Annotation> A[] java.lang.Class.getAnnotationsByType(java.lang.Class<A>)
+             **/
+            Lazy<Handle> GetAnnotationsByType = Ref.lazy(() -> $Type.get().handle("getAnnotationsByType", Ref.type("java.lang.annotation.Annotation[]").element(), Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Constructor<?>[] java.lang.Class.getConstructors() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetConstructors = Ref.lazy(() -> $Type.get().handle("getConstructors", Ref.type("java.lang.reflect.Constructor[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Field[] java.lang.Class.privateGetDeclaredFields(boolean)
+             **/
+            Lazy<Handle> PrivateGetDeclaredFields = Ref.lazy(() -> $Type.get().handle("privateGetDeclaredFields", Ref.type("java.lang.reflect.Field[]").element(), boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.AnnotatedType java.lang.Class.getAnnotatedSuperclass()
+             **/
+            Lazy<Handle> GetAnnotatedSuperclass = Ref.lazy(() -> $Type.get().handle("getAnnotatedSuperclass", AnnotatedType.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private static java.lang.reflect.Field java.lang.Class.searchFields(java.lang.reflect.Field[],java.lang.String)
+             **/
+            Lazy<Handle.Alive> SearchFields = Ref.lazy(() -> $Type.get().findStatic("searchFields", Field.class, Ref.type("java.lang.reflect.Field[]").element(), String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native int java.lang.Class.getModifiers()
+             **/
+            Lazy<Handle> GetModifiers = Ref.lazy(() -> $Type.get().handle("getModifiers", int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.String java.lang.Class.getTypeName()
+             **/
+            Lazy<Handle> GetTypeName = Ref.lazy(() -> $Type.get().handle("getTypeName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Constructor<?> java.lang.Class.getEnclosingConstructor() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetEnclosingConstructor = Ref.lazy(() -> $Type.get().handle("getEnclosingConstructor", Constructor.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isNestmateOf(java.lang.Class<?>)
+             **/
+            Lazy<Handle> IsNestmateOf = Ref.lazy(() -> $Type.get().handle("isNestmateOf", boolean.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.reflect.RecordComponent[] java.lang.Class.getRecordComponents0()
+             **/
+            Lazy<Handle> GetRecordComponents0 = Ref.lazy(() -> $Type.get().handle("getRecordComponents0", Ref.type("java.lang.reflect.RecordComponent[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native java.lang.Class<? super T> java.lang.Class.getSuperclass()
+             **/
+            Lazy<Handle> GetSuperclass = Ref.lazy(() -> $Type.get().handle("getSuperclass", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Field java.lang.Class.getDeclaredField(java.lang.String) throws java.lang.NoSuchFieldException,java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaredField = Ref.lazy(() -> $Type.get().handle("getDeclaredField", Field.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * java.util.Map<java.lang.String, T> java.lang.Class.enumConstantDirectory()
+             **/
+            Lazy<Handle> EnumConstantDirectory = Ref.lazy(() -> $Type.get().handle("enumConstantDirectory", Map.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.io.InputStream java.lang.Class.getResourceAsStream(java.lang.String)
+             **/
+            Lazy<Handle> GetResourceAsStream = Ref.lazy(() -> $Type.get().handle("getResourceAsStream", java.io.InputStream.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class$EnclosingMethodInfo java.lang.Class.getEnclosingMethodInfo()
+             **/
+            Lazy<Handle> GetEnclosingMethodInfo = Ref.lazy(() -> $Type.get().handle("getEnclosingMethodInfo", Ref.type("java.lang.Class.EnclosingMethodInfo").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Method java.lang.Class.getDeclaredMethod(java.lang.String,java.lang.Class<?>...) throws java.lang.NoSuchMethodException,java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaredMethod = Ref.lazy(() -> $Type.get().handle("getDeclaredMethod", Method.class, String.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * native byte[] java.lang.Class.getRawTypeAnnotations()
+             **/
+            Lazy<Handle> GetRawTypeAnnotations = Ref.lazy(() -> $Type.get().handle("getRawTypeAnnotations", byte[][].class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public boolean java.lang.Class.isEnum()
+             **/
+            Lazy<Handle> IsEnum = Ref.lazy(() -> $Type.get().handle("isEnum", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.String java.lang.Class.cannotCastMsg(java.lang.Object)
+             **/
+            Lazy<Handle> CannotCastMsg = Ref.lazy(() -> $Type.get().handle("cannotCastMsg", String.class, Object.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.reflect.Constructor<T> java.lang.Class.getConstructor(java.lang.Class<?>...) throws java.lang.NoSuchMethodException,java.lang.SecurityException
+             **/
+            Lazy<Handle> GetConstructor = Ref.lazy(() -> $Type.get().handle("getConstructor", Constructor.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public T[] java.lang.Class.getEnumConstants()
+             **/
+            Lazy<Handle> GetEnumConstants = Ref.lazy(() -> $Type.get().handle("getEnumConstants", Ref.type("java.lang.Object[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public native boolean java.lang.Class.isHidden()
+             **/
+            Lazy<Handle> IsHidden = Ref.lazy(() -> $Type.get().handle("isHidden", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.String java.lang.Class.initClassName()
+             **/
+            Lazy<Handle> InitClassName = Ref.lazy(() -> $Type.get().handle("initClassName", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.String java.lang.Class.resolveName(java.lang.String)
+             **/
+            Lazy<Handle> ResolveName = Ref.lazy(() -> $Type.get().handle("resolveName", String.class, String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?>[] java.lang.Class.getDeclaredClasses() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetDeclaredClasses = Ref.lazy(() -> $Type.get().handle("getDeclaredClasses", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * static byte[] java.lang.Class.getExecutableTypeAnnotationBytes(java.lang.reflect.Executable)
+             **/
+            Lazy<Handle.Alive> GetExecutableTypeAnnotationBytes = Ref.lazy(() -> $Type.get().findStatic("getExecutableTypeAnnotationBytes", byte[][].class, Executable.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.String java.lang.Class.getGenericSignature0()
+             **/
+            Lazy<Handle> GetGenericSignature0 = Ref.lazy(() -> $Type.get().handle("getGenericSignature0", String.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private native java.lang.Class<?>[] java.lang.Class.getDeclaredClasses0()
+             **/
+            Lazy<Handle> GetDeclaredClasses0 = Ref.lazy(() -> $Type.get().handle("getDeclaredClasses0", Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /** private void java.lang.Class.checkPackageAccess(java.lang.SecurityManager,java.lang.ClassLoader,boolean) **/
+            //Ref.Lazy<Ref.Handle> CheckPackageAccess=Ref.lazy(()->$Type.get().handle("checkPackageAccess",void.class,java.lang.SecurityManager.class,java.lang.ClassLoader.class,boolean.class).orElseThrow(()->new IllegalStateException("No value present")));
+            /**
+             * public boolean java.lang.Class.isAnonymousClass()
+             **/
+            Lazy<Handle> IsAnonymousClass = Ref.lazy(() -> $Type.get().handle("isAnonymousClass", boolean.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.reflect.Method java.lang.Class.getMethod0(java.lang.String,java.lang.Class<?>[])
+             **/
+            Lazy<Handle> GetMethod0 = Ref.lazy(() -> $Type.get().handle("getMethod0", Method.class, String.class, Ref.type("java.lang.Class[]").element()).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * public java.lang.Class<?> java.lang.Class.getEnclosingClass() throws java.lang.SecurityException
+             **/
+            Lazy<Handle> GetEnclosingClass = Ref.lazy(() -> $Type.get().handle("getEnclosingClass", Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class$AnnotationData java.lang.Class.createAnnotationData(int)
+             **/
+            Lazy<Handle> CreateAnnotationData = Ref.lazy(() -> $Type.get().handle("createAnnotationData", Ref.type("java.lang.Class.AnnotationData").element(), int.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+            /**
+             * private java.lang.Class(java.lang.ClassLoader,java.lang.Class<?>)
+             **/
+            Lazy<Handle.Alive> CREATE = Ref.lazy(() -> $Type.get().findConstructor(ClassLoader.class, Class.class).orElseThrow(() -> new NoSuchElementException("No value present")));
+        }
+        //endregion
+    }
+
+    //region QualifiedNames
+    @Getter
+    @Accessors(fluent = true)
+    abstract class QualifiedName<T> {
+        protected final String qualifiedName;
+
+        protected QualifiedName(String qualifiedName) {
+            assert qualifiedName != null && !qualifiedName.isEmpty() : "invalid qualifiedName";
+            this.qualifiedName = qualifiedName;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(qualifiedName);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof QualifiedName<?>)
+                return Objects.equals(((QualifiedName<?>) obj).qualifiedName, qualifiedName);
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return qualifiedName;
+        }
+
+        abstract public T find(ClassLoader cl, boolean inStack);
+
+        abstract public T mustFind(ClassLoader cl, boolean inStack);
+
+        public Optional<T> maybe(ClassLoader cl, boolean inStack) {
+            return Optional.ofNullable(find(cl, inStack));
+        }
+    }
+
+    @Getter
+    @Accessors(fluent = true)
+    final class QualifiedClassName extends QualifiedName<Class<?>> {
+        final String name;
+        final int dim;
+
+
+        QualifiedClassName(String fqn) {
+            super(fqn);
+            var dim = 0;
+            var idx = fqn.indexOf('[');
+            var com = fqn;
+            if (idx > 0) {
+                dim = (fqn.length() - idx) / 2;
+                com = fqn.substring(0, idx);
+            }
+            this.name = com;
+            this.dim = dim;
+        }
+
+        @SuppressWarnings("removal")
+        private Class<?> findInStack() {
+            Class<?>[] stackTraceClasses = null;
+            try {
+                stackTraceClasses = new SecurityManager() {
+
+                    public Class<?>[] classContext() {
+                        return super.getClassContext();
+                    }
+                }.classContext();
+            } catch (Error ignore) {
+            }
+            if (stackTraceClasses == null)
+                return null;
+            var history = new HashSet<ClassLoader>();
+            history.add(QualifiedClassName.class.getClassLoader());
+            history.add(Thread.currentThread().getContextClassLoader());
+            for (var cls : stackTraceClasses) {
+                var cl = cls.getClassLoader();
+                if (history.contains(cl)) {
+                    continue;
+                }
+                history.add(cl);
+                var out = find(cl, false);
+                if (out != null) return out;
+            }
+            return null;
+        }
+
+        public Class<?> find(ClassLoader cl, boolean inStack) {
+            var p = Type.primitive(name);
+            var cached = false;
+            if (p == null) p = $.classes.getIfPresent(name);
+            if (p != null) cached = true;
+            if (p == null) {
+                try {
+                    p = Class.forName(name);
+                } catch (ClassNotFoundException ignore) {
+                    var tcl = Thread.currentThread().getContextClassLoader();
+                    if (cl != tcl && tcl != null) return find(tcl, inStack);
+                    p = inStack ? findInStack() : null;
+                }
+            }
+            if (p != null && !cached) $.classes.put(name, p);
+            if (p != null && dim > 0) p = Array.newInstance(p, new int[dim]).getClass();
+            return p;
+        }
+
+        @SneakyThrows
+        public Class<?> mustFind(ClassLoader cl, boolean inStack) {
+            var cls = find(cl, inStack);
+            if (cls == null) throw new ClassNotFoundException(qualifiedName);
+            return cls;
+        }
+
+        public static QualifiedClassName of(String fqn) {
+            return new QualifiedClassName(fqn);
+        }
+    }
+
+    @Getter
+    @Accessors(fluent = true)
+    final class QualifiedMethodName extends QualifiedName<Method> {
+
+        final QualifiedClassName declared;
+        final String name;
+        final QualifiedClassName[] parameterTypes;
+        final QualifiedClassName returnType;
+
+
+        QualifiedMethodName(String fqm) {
+            super(fqm);
+            var idx = fqm.indexOf('#');
+            var lb = fqm.indexOf('(');
+            var rb = fqm.indexOf(')');
+            assert idx > 0 : "invalid " + fqm;
+            assert lb > idx : "invalid " + fqm;
+            assert rb > lb : "invalid " + fqm;
+            declared = QualifiedClassName.of(fqm.substring(0, idx));
+            name = fqm.substring(idx + 1, lb);
+            var p = fqm.substring(lb + 1, rb);
+            if (p.isEmpty())
+                parameterTypes = new QualifiedClassName[0];
+            else {
+                parameterTypes = Arrays.stream(p.split(",")).map(String::trim).map(QualifiedClassName::of).toArray(QualifiedClassName[]::new);
+            }
+            if (fqm.length() > rb + 1) {
+                returnType = QualifiedClassName.of(fqm.substring(rb + 1));
+            } else {
+                returnType = null;
+            }
+        }
+
+        public Method find(ClassLoader cl, boolean inStack) {
+            var t = declared.find(cl, inStack);
+            if (t == null) return null;
+            var p = Arrays.stream(parameterTypes).map(x -> x.find(cl, inStack)).toArray(Class<?>[]::new);
+            var r = returnType != null ? returnType.find(cl, inStack) : null;
+            var m = $.methods.get(t);
+            if (m != null) {
+                for (var v : m) {
+                    if (v.getName().equals(name) && Arrays.equals(p, v.getParameterTypes())) {
+                        if (r == null || r == v.getReturnType())
+                            return $.access(v);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @SneakyThrows
+        public Method mustFind(ClassLoader cl, boolean inStack) {
+            var ret = find(cl, inStack);
+            if (ret == null) throw new NoSuchMethodException(qualifiedName);
+            return ret;
+        }
+
+        public static QualifiedMethodName of(String fqm) {
+            return new QualifiedMethodName(fqm);
+        }
+    }
+
+    @Getter
+    @Accessors(fluent = true)
+    final class QualifiedConstructorName extends QualifiedName<Constructor<?>> {
+
+        final QualifiedClassName declared;
+
+        final QualifiedClassName[] parameterTypes;
+
+
+        QualifiedConstructorName(String fqm) {
+            super(fqm);
+            var lb = fqm.indexOf('(');
+            var rb = fqm.indexOf(')');
+            assert lb > 0 : "invalid " + fqm;
+            assert rb > lb : "invalid " + fqm;
+            declared = QualifiedClassName.of(fqm.substring(0, lb));
+            var p = fqm.substring(lb + 1, rb);
+            if (p.isEmpty())
+                parameterTypes = new QualifiedClassName[0];
+            else {
+                parameterTypes = Arrays.stream(p.split(",")).map(String::trim).map(QualifiedClassName::of).toArray(QualifiedClassName[]::new);
+            }
+        }
+
+        public Constructor<?> find(ClassLoader cl, boolean inStack) {
+            var t = declared.find(cl, inStack);
+            if (t == null) return null;
+            var p = Arrays.stream(parameterTypes).map(x -> x.find(cl, inStack)).toArray(Class<?>[]::new);
+            var m = $.constructors.get(t);
+            if (m != null) {
+                for (var v : m) {
+                    if (Arrays.equals(p, v.getParameterTypes())) {
+                        return $.access(v);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @SneakyThrows
+        public Constructor<?> mustFind(ClassLoader cl, boolean inStack) {
+            var ret = find(cl, inStack);
+            if (ret == null) throw new NoSuchMethodException(qualifiedName);
+            return ret;
+        }
+
+        public static QualifiedConstructorName of(String fqm) {
+            return new QualifiedConstructorName(fqm);
+        }
+    }
+
+    @Getter
+    @Accessors(fluent = true)
+    final class QualifiedFieldName extends QualifiedName<Field> {
+
+        final QualifiedClassName declared;
+        final String name;
+        final QualifiedClassName type;
+
+
+        QualifiedFieldName(String ffn) {
+            super(ffn);
+            var idx = ffn.indexOf('#');
+            var cdx = ffn.indexOf(':');
+            assert idx > 0 : "invalid " + ffn;
+            declared = QualifiedClassName.of(ffn.substring(0, idx));
+            name = ffn.substring(idx + 1, cdx == -1 ? ffn.length() : cdx);
+            if (cdx != -1) {
+                type = QualifiedClassName.of(ffn.substring(cdx + 1));
+            } else {
+                type = null;
+            }
+        }
+
+        public Field find(ClassLoader cl, boolean inStack) {
+            var t = declared.find(cl, inStack);
+            if (t == null) return null;
+            var r = type != null ? type.find(cl, inStack) : null;
+            var m = $.fields.get(t);
+            if (m != null) {
+                for (var v : m) {
+                    if (v.getName().equals(name)) {
+                        if (r == null || r == v.getType())
+                            return $.access(v);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @SneakyThrows
+        public Field mustFind(ClassLoader cl, boolean inStack) {
+            var ret = find(cl, inStack);
+            if (ret == null) throw new NoSuchFieldException(qualifiedName);
+            return ret;
+        }
+
+        public static QualifiedFieldName of(String fqn) {
+            return new QualifiedFieldName(fqn);
+        }
+    }
+    //endregion
+
+    //region Base Interfaces
+    interface Anno<T extends AnnotatedElement> extends Ref<T> {
+        default <A extends Annotation> A[] getAnnotationsByType(Class<A> annotationClass) {
+            return element().getAnnotationsByType(annotationClass);
+        }
+
+        default <A extends Annotation> A[] getDeclaredAnnotationsByType(Class<A> annotationClass) {
+            return element().getDeclaredAnnotationsByType(annotationClass);
+        }
+
+        default <A extends Annotation> A getDeclaredAnnotation(Class<A> annotationClass) {
+            return element().getDeclaredAnnotation(annotationClass);
+        }
+
+        default boolean hasAnnotation(Class<? extends Annotation> anno) {
+            return element().getDeclaredAnnotationsByType(anno).length > 0;
+        }
+
+        default Annotation[] getAnnotations() {
+            return element().getAnnotations();
+        }
+
+        default Annotation[] getDeclaredAnnotations() {
+            return element().getDeclaredAnnotations();
+        }
+    }
+
+    interface Mem<T extends Member> extends Ref<T> {
+        default int getModifiers() {
+            return element().getModifiers();
+        }
+
+        default boolean isSynthetic() {
+            return element().isSynthetic();
+        }
+
+        default boolean isPublic() {
+            return Modifier.isPublic(getModifiers());
+        }
+
+        default boolean isPrivate() {
+            return Modifier.isPrivate(getModifiers());
+        }
+
+        default boolean isProtected() {
+            return Modifier.isProtected(getModifiers());
+        }
+
+        default boolean isFinal() {
+            return Modifier.isFinal(getModifiers());
+        }
+
+        default boolean isStatic() {
+            return Modifier.isStatic(getModifiers());
+        }
+
+
+        default String getName() {
+            return element().getName();
+        }
+
+
+    }
+
+    interface Exec<T extends Executable> extends Anno<T>, Mem<T> {
+        default Type getDeclaringClass() {
+            var v = element().getDeclaringClass();
+            return () -> v;
+        }
+
+        default TypeVariable<?>[] getTypeParameters() {
+            return element().getTypeParameters();
+        }
+
+        default boolean isVarArgs() {
+            return element().isVarArgs();
+        }
+
+        default String toGenericString() {
+            return element().toGenericString();
+        }
+    }
+
+
+    interface Live<T> extends Ref<T> {
+        $.Pair<T> pair();
+
+        default Object value() {
+            return pair().value();
+        }
+
+        default T element() {
+            return pair().element();
+        }
+    }
+    //endregion
+    //region construct
 
     /**
      * wrap class to  {@link Type}
@@ -198,8 +1872,8 @@ public interface Ref<E> {
     }
 
 
-
-    interface Type extends Ref<Class<?>> {
+    //endregion
+    interface Type extends Ref<Class<?>>, Anno<Class<?>> {
         //region Utils
 
         static Class<?> box(Class<?> t) {
@@ -213,17 +1887,17 @@ public interface Ref<E> {
         static Class<?> primitive(String t) {
             //@formatter:off
             return
-                    t==null||t.isEmpty()?null:
-                    t.equals("void") ?void.class :
-                    t.equals("boolean") ?boolean.class :
-                    t.equals("byte") ?byte.class :
-                    t.equals("char") ?char.class :
-                    t.equals("short") ?short.class :
-                    t.equals("int") ?int.class :
-                    t.equals("long") ?long.class :
-                    t.equals("float") ?float.class :
-                    t.equals("double") ?double.class :
-                    null ;
+                    t == null || t.isEmpty() ? null :
+                            t.equals("void") ? void.class :
+                                    t.equals("boolean") ? boolean.class :
+                                            t.equals("byte") ? byte.class :
+                                                    t.equals("char") ? char.class :
+                                                            t.equals("short") ? short.class :
+                                                                    t.equals("int") ? int.class :
+                                                                            t.equals("long") ? long.class :
+                                                                                    t.equals("float") ? float.class :
+                                                                                            t.equals("double") ? double.class :
+                                                                                                    null;
             //@formatter:on
         }
 
@@ -249,6 +1923,10 @@ public interface Ref<E> {
             return Optional.ofNullable($.find(element(), name, type)).map(f -> () -> f);
         }
 
+        default Stream<Prop> props() {
+            return Arrays.stream($.fields(element())).map(v -> () -> v);
+        }
+
         default Optional<Creator> creator(Class<?>... args) {
             return Optional.ofNullable($.find(element(), args)).map(f -> () -> f);
         }
@@ -257,8 +1935,12 @@ public interface Ref<E> {
             return Optional.ofNullable($.find(element(), name, returnType, args)).map(f -> () -> f);
         }
 
-        default Optional<Func> fun(String name, Class<?>... args) {
+        default Optional<Func> func(String name, Class<?>... args) {
             return Optional.ofNullable($.find(element(), name, null, args)).map(f -> () -> f);
+        }
+
+        default Stream<Func> funcs() {
+            return Arrays.stream($.methods(element())).map(m -> () -> m);
         }
 
         default Optional<Handle> handle(String name, Class<?> returnType, Class<?>... args) {
@@ -339,8 +2021,8 @@ public interface Ref<E> {
         }
     }
 
-    interface Prop extends Acc<Field>, Mem<Field> {
-        interface Alive extends Acc<Field>, Mem<Field>, Live<Field> {
+    interface Prop extends Anno<Field>, Mem<Field> {
+        interface Alive extends Anno<Field>, Mem<Field>, Live<Field> {
             @SneakyThrows
             default <T> T get() {
                 return (T) element().get(value());
@@ -381,6 +2063,34 @@ public interface Ref<E> {
             return (T) element().invoke(self, val);
         }
 
+        default boolean isDefault() {
+            return element().isDefault();
+        }
+
+        default int getParameterCount() {
+            return element().getParameterCount();
+        }
+
+        default Stream<Type> getParameterTypes() {
+            return Arrays.stream(element().getParameterTypes()).map(Ref::type);
+        }
+
+        default Stream<java.lang.reflect.Type> getGenericParameterTypes() {
+            return Arrays.stream(element().getGenericParameterTypes());
+        }
+
+        default Optional<Type> getReturnType() {
+            return Optional.of(element().getReturnType()).filter(x -> x != Void.TYPE).map(Ref::type);
+        }
+
+        default Optional<java.lang.reflect.Type> getGenericReturnType() {
+            return Optional.of(element().getGenericReturnType()).filter(x -> x != Void.TYPE);
+        }
+
+        default Type getDeclaringType() {
+            return Ref.type(element().getDeclaringClass());
+        }
+
         default Handle asHandle() {
             return handle(element());
         }
@@ -390,6 +2100,7 @@ public interface Ref<E> {
             var p = $.Pair.of(instance, element());
             return () -> p;
         }
+
 
         interface Alive extends Exec<Method>, Live<Method> {
             @SneakyThrows
@@ -438,6 +2149,7 @@ public interface Ref<E> {
             return (T) element().invoke(args);
         }
 
+
         interface Alive extends Handle {
             static Alive ofStatic(MethodHandle handle) {
                 return () -> handle;
@@ -454,6 +2166,9 @@ public interface Ref<E> {
             }
         }
     }
+
+
+
 
     /**
      * Util to Generate Mapping Interface for Class
@@ -1008,7 +2723,7 @@ public interface Ref<E> {
                     if (isStatic && Modifier.isFinal(f.getModifiers()) && preferConst
                         && (f.getType() == String.class || Type.box(f.getType()) != f.getType())) {
                         var v = Ref.type(target).prop(f.getName())
-                                .orElseThrow(() -> new IllegalStateException("fetch field const")).get(null);
+                                .orElseThrow(() -> new NoSuchElementException("fetch field const")).get(null);
                         b.append(f.getType().getCanonicalName()).append(" ").append(capName).append(SUFFIX_HOLDER).append("=")
                                 .append(v instanceof String ? '"' : ' ')
                                 .append(v instanceof String ? v : String.valueOf(v))
@@ -1207,5 +2922,4 @@ public interface Ref<E> {
 
 
     }
-
 }

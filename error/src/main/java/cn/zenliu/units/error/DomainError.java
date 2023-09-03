@@ -18,7 +18,6 @@ package cn.zenliu.units.error;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.experimental.UtilityClass;
-import lombok.var;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 import org.slf4j.helpers.MessageFormatter;
@@ -85,20 +84,20 @@ public class DomainError extends RuntimeException {
         if (args.length == 0) return new DomainError(code, translate(translator, user), translate(translator, system));
         assert from < args.length : "user message argument start point longer than arguments";
         switch (from) {
-            case -2: {
+            case -2 -> {
                 var sm = MessageFormatter.arrayFormat(translate(translator, system), args);
                 return new DomainError(code, translate(translator, user), sm.getMessage(), sm.getThrowable());
             }
-            case -1: {
+            case -1 -> {
                 var sm = MessageFormatter.arrayFormat(translate(translator, system), args);
                 var um = MessageFormatter.arrayFormat(translate(translator, user), args);
                 return new DomainError(code, um.getMessage(), sm.getMessage(), sm.getThrowable());
             }
-            case 0: {
+            case 0 -> {
                 var um = MessageFormatter.arrayFormat(translate(translator, user), args);
                 return new DomainError(code, um.getMessage(), system == null ? um.getMessage() : translate(translator, system), um.getThrowable());
             }
-            default: {
+            default -> {
                 if (from < 0 || from > args.length)
                     throw new IndexOutOfBoundsException("from " + from + " invalid in length of " + args.length);
                 var sm = system == null ? null : MessageFormatter.arrayFormat(translate(translator, system), args);

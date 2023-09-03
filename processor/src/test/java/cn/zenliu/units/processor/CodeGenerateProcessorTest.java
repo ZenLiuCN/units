@@ -16,7 +16,7 @@
 package cn.zenliu.units.processor;
 
 import com.google.testing.compile.JavaFileObjects;
-import lombok.var;
+
 import org.junit.jupiter.api.Test;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
@@ -24,7 +24,7 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 class CodeGenerateProcessorTest {
     @Test
     void simple() {
-        TestTools.config("generators=cn.zenliu.units.processor.Simple");
+        TestTools.config("generators:[cn.zenliu.units.processor.Simple]");
         var compilation = TestTools.compile(JavaFileObjects.forSourceString("MetaTest",
                 " package some.pack;\n" +
                         "import cn.zenliu.units.processor.SimpleAnno;" +

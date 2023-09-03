@@ -62,3 +62,5 @@ License as `GPL v2 with classpath exception`.
 5. Properties `enhance.properites` to config processors;
 # Reflect
 1. Requires [Caffeine](https://github.com/ben-manes/caffeine) to run.
+# Note
+ `main` branch had dump to support java 17+. older version remains under `0.x` branch.

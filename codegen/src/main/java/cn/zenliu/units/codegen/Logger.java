@@ -16,7 +16,6 @@
 package cn.zenliu.units.codegen;
 
 import lombok.SneakyThrows;
-import lombok.var;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
 

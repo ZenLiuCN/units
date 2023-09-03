@@ -16,8 +16,14 @@
 package cn.zenliu.units.codegen;
 
 
-import cn.zenliu.units.binary.Bytes;
-import lombok.*;
+import cn.zenliu.units.codec.Codec;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 
 import java.lang.reflect.*;
@@ -32,15 +38,16 @@ import java.util.*;
 public class TypeInfo {
     public String toString() {
         return "TypeInfo(name=" + this.name +
-                ", typeClass=" + (this.typeClass != null ? this.typeClass.name : null) +
-                ", type=" + this.type +
-                ", parameterized=" + this.parameterized +
-                ", typeArguments=" + this.typeArguments +
-                ", array=" + this.array +
-                ", boundary=" + this.boundary +
-                ", upper=" + this.upper +
-                ", lower=" + this.lower + ")";
+               ", typeClass=" + (this.typeClass != null ? this.typeClass.name : null) +
+               ", type=" + this.type +
+               ", parameterized=" + this.parameterized +
+               ", typeArguments=" + this.typeArguments +
+               ", array=" + this.array +
+               ", boundary=" + this.boundary +
+               ", upper=" + this.upper +
+               ", lower=" + this.lower + ")";
     }
+
 
     @Getter
     @Accessors(fluent = true)
@@ -146,11 +153,11 @@ public class TypeInfo {
      */
     public boolean isHolder() {
         return type != null &&
-                (name == null || name.isEmpty()) &&
-                !parameterized &&
-                !boundary &&
-                !array &&
-                typeClass == null;
+               (name == null || name.isEmpty()) &&
+               !parameterized &&
+               !boundary &&
+               !array &&
+               typeClass == null;
     }
 
     /**
@@ -164,119 +171,142 @@ public class TypeInfo {
         return this;
     }
 
-    @SneakyThrows
-    static TypeInfo deserialize(Bytes buf) {
-        var b = TypeInfo.builder()
-                .name(buf.readString());
-        //type class
-        if (buf.readBoolean()) {
-            b.typeClass(new LazyClass(buf.readString()));
-        }
-        //type
-        if (buf.readBoolean()) {
-            b.type(deserialize(buf));
-        }
-        //parameterized
-        {
-            var n = buf.readInt();
-            if (n > 0) {
-                var l = new ArrayList<TypeInfo>();
-                for (int i = 0; i < n; i++) {
-                    l.add(deserialize(buf));
+    public static class TypeInfoCodec implements Codec.TypeInfo<TypeInfo> {
+
+        @Override
+        public TypeInfo read(ByteBuf buf) {
+            var name = Codec.decodeString(buf);
+            if (name == null) return null;
+            var b = TypeInfo.builder().name(name);
+            //type class
+            {
+                var n = Codec.decodeString(buf);
+                if (n != null) {
+                    b.typeClass(new LazyClass(n));
                 }
-                b.parameterized(true)
-                        .typeArguments(l);
             }
-        }
-        //array
-        b.array(buf.readBoolean());
-        //boundary
-        var boundary = buf.readBoolean();
-        b.boundary(boundary);
-        if (boundary) {
-            //boundary upper
-            if (buf.readBoolean()) {
-                var n = buf.readInt();
-                var lst = new ArrayList<TypeInfo>();
-                for (int i = 0; i < n; i++) {
-                    lst.add(deserialize(buf));
+
+            //type
+            {
+                b.type(read(buf));
+            }
+            //parameterized
+            {
+                var n = Codec.varInt32(buf);
+                if (n > 0) {
+                    var l = new ArrayList<TypeInfo>();
+                    for (int i = 0; i < n; i++) {
+                        l.add(read(buf));
+                    }
+                    b.parameterized(true).typeArguments(l);
                 }
-                b.upper(lst);
             }
-            //boundary lower
-            if (buf.readBoolean()) {
-                var n = buf.readInt();
-                var lst = new ArrayList<TypeInfo>();
-                for (int i = 0; i < n; i++) {
-                    lst.add(deserialize(buf));
+            //array
+            b.array(buf.readBoolean());
+            //boundary
+            var boundary = buf.readBoolean();
+            b.boundary(boundary);
+            if (boundary) {
+                //boundary upper
+                {
+                    var n = Codec.varInt32(buf);
+                    if (n > 0) {
+                        var lst = new ArrayList<TypeInfo>();
+                        for (int i = 0; i < n; i++) {
+                            lst.add(read(buf));
+                        }
+                        b.upper(lst);
+                    }
                 }
-                b.lower(lst);
+                //boundary lower
+                {
+                    var n = Codec.varInt32(buf);
+                    if (n > 0) {
+                        var lst = new ArrayList<TypeInfo>();
+                        for (int i = 0; i < n; i++) {
+                            lst.add(read(buf));
+                        }
+                        b.lower(lst);
+                    }
+                }
             }
+
+            return b.build();
         }
 
-        return b.build();
+        @Override
+        public void write(ByteBuf buf, TypeInfo value) {
+            if (value == null) {
+                Codec.encodeString(buf, null);
+                return;
+            }
+            Codec.encodeString(buf, value.name);
+
+            //type class
+            Codec.encodeString(buf, value.typeClass != null ? value.typeClass.name() : null);
+            //type
+            write(buf, value.type);
+
+            //parameterized
+            if (value.parameterized && value.typeArguments != null && !value.typeArguments.isEmpty()) {
+                Codec.varInt32(buf, value.typeArguments.size());
+                for (var a : value.typeArguments) {
+                    write(buf, a);
+                }
+            } else {
+                Codec.varInt32(buf, 0);
+            }
+            //array
+            buf.writeBoolean(value.array);
+            //boundary
+            buf.writeBoolean(value.boundary);
+            if (value.boundary) {
+                if (value.upper != null && !value.upper.isEmpty()) {
+                    Codec.varInt32(buf, value.upper.size());
+                    for (var i : value.upper) {
+                        write(buf, i);
+                    }
+                } else {
+                    Codec.varInt32(buf, 0);
+                }
+                if (value.lower != null && !value.lower.isEmpty()) {
+                    Codec.varInt32(buf, value.lower.size());
+                    for (var i : value.lower) {
+                        write(buf, i);
+                    }
+                } else {
+                    Codec.varInt32(buf, 0);
+                }
+            }
+        }
     }
 
-    static void serialize(TypeInfo info, Bytes buf) {
-        buf.put(info.name);
-        //type class
-        if (info.typeClass != null) {
-            buf.put(true).put(info.typeClass.name());
-        } else
-            buf.put(false);
-        //type
-        if (info.type != null) {
-            buf.put(true);
-            serialize(info.type, buf);
-        } else
-            buf.put(false);
-        //parameterized
-        if (info.parameterized && info.typeArguments != null && !info.typeArguments.isEmpty()) {
-            buf.put(info.typeArguments.size());
-            for (var a : info.typeArguments) serialize(a, buf);
-        } else {
-            buf.put(0);
-        }
-        //array
-        buf.put(info.array);
-        //boundary
-        buf.put(info.boundary);
-        if (info.boundary) {
-            if (info.upper != null && !info.upper.isEmpty()) {
-                buf.put(true);
-                buf.put(info.upper.size());
-                for (var i : info.upper) {
-                    serialize(i, buf);
-                }
-            } else {
-                buf.put(false);
-            }
-            if (info.lower != null) {
-                buf.put(true);
-                buf.put(info.lower.size());
-                for (var i : info.lower) {
-                    serialize(i, buf);
-                }
-            } else {
-                buf.put(false);
-            }
-        }
-    }
 
     /**
      * Write to binary present.
      */
     public static byte[] serialize(TypeInfo info) {
-        var buf = Bytes.writeVarIntBytes(new byte[1024], 0, 256);
-        serialize(info, buf);
-        return Arrays.copyOf(buf.buf(), buf.index());
+        var buf = Unpooled.buffer();
+        try {
+            var codec = new TypeInfoCodec();
+            codec.write(buf, info);
+            return ByteBufUtil.getBytes(buf);
+        } finally {
+            buf.release();
+        }
     }
 
     /**
      * From a byte array.
      */
     public static TypeInfo deserialize(byte[] buf) {
-        return deserialize(Bytes.readVarIntBytes(buf));
+        var codec = new TypeInfoCodec();
+        var b = Unpooled.wrappedBuffer(buf);
+        try {
+            return codec.read(b);
+        } finally {
+            b.release();
+        }
     }
 
     /**
@@ -285,7 +315,7 @@ public class TypeInfo {
      * @param base64 base64 std encoded string
      */
     public static TypeInfo deserialize(String base64) {
-        return deserialize(Bytes.readVarIntBytes(Base64.getDecoder().decode(base64)));
+        return deserialize(Base64.getDecoder().decode(base64));
     }
 
     public static TypeInfo from(Type info) {
@@ -294,8 +324,8 @@ public class TypeInfo {
             var cls = (Class<?>) info;
             b.array(cls.isArray())
                     .typeClass(new LazyClass(cls));
-        } else if (info instanceof ParameterizedType ) {
-            var p=(ParameterizedType)info;
+        } else if (info instanceof ParameterizedType) {
+            var p = (ParameterizedType) info;
             var raw = p.getRawType();
             b.parameterized(true);
             b.type(from(raw));
@@ -304,13 +334,13 @@ public class TypeInfo {
                 lst.add(from(argument));
             }
             b.typeArguments(lst);
-        } else if (info instanceof GenericArrayType ) {
-            var p=(GenericArrayType)info;
+        } else if (info instanceof GenericArrayType) {
+            var p = (GenericArrayType) info;
             var raw = p.getGenericComponentType();
             b.array(true);
             b.type(from(raw));
-        } else if (info instanceof TypeVariable<?> ) {
-            var p=(TypeVariable<?>)info;
+        } else if (info instanceof TypeVariable<?>) {
+            var p = (TypeVariable<?>) info;
             b.name(p.getName());
             var boundary = p.getBounds().length > 0;
             b.boundary(boundary);
@@ -323,8 +353,8 @@ public class TypeInfo {
             } else {
                 b.typeClass(new LazyClass(Object.class));
             }
-        } else if (info instanceof WildcardType ) {
-            var p=(WildcardType)info;
+        } else if (info instanceof WildcardType) {
+            var p = (WildcardType) info;
             b.name("*");
             var boundary = p.getLowerBounds().length > 0 || p.getUpperBounds().length > 0;
             b.boundary(boundary);

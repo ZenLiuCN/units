@@ -15,16 +15,13 @@
 
 package cn.zenliu.units.processor.util;
 
-import lombok.Value;
-import lombok.experimental.Accessors;
-
 /**
  * @author Zen.Liu
  * @since 2023-05-07
  */
-@Value(staticConstructor = "of")
-@Accessors(fluent = true)
-public class Pair<V0, V1> {
-     V0 v0;
-     V1 v1;
+
+public record Pair<V0, V1>(V0 v0, V1 v1) {
+    public static <V0, V1> Pair<V0, V1> of(V0 v0, V1 v1) {
+        return new Pair<>(v0, v1);
+    }
 }

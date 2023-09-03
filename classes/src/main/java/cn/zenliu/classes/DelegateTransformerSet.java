@@ -17,7 +17,6 @@ package cn.zenliu.classes;
 
 import com.google.common.collect.ObjectArrays;
 import lombok.NonNull;
-import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

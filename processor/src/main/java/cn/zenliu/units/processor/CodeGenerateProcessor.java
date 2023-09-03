@@ -23,7 +23,7 @@ import cn.zenliu.units.processor.util.Pair;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
-import lombok.var;
+
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;

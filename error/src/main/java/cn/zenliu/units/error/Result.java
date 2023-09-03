@@ -16,7 +16,6 @@
 package cn.zenliu.units.error;
 
 import lombok.SneakyThrows;
-import lombok.var;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -136,45 +135,47 @@ public interface Result<T> {
     static <T> Result<T> ok(T v) {
         return new Success<>(v);
     }
+
     /**
      * Create warning result.
      * This will use {@link ErrorConverter#conv(Throwable)} to convert result
+     *
      * @param v runnable
      * @return Result
      */
     static <T> Result<T> warn(T v, Throwable err) {
-        return new Warning<>(v,  ErrorConverter.conv(err));
+        return new Warning<>(v, ErrorConverter.conv(err));
     }
+
     /**
      * Create failure result.
      * This will use {@link ErrorConverter#conv(Throwable)} to convert result
-     *
      */
     static <T> Result<T> fail(Throwable v) {
-        return new Failure<>( ErrorConverter.conv(v));
+        return new Failure<>(ErrorConverter.conv(v));
     }
+
     /**
      * Create failure result.
-     *
      */
     static <T> Result<T> fail(Throwable v, ErrorConverter converter) {
         return new Failure<>(converter.convert(v));
     }
+
     /**
      * Execute supplier to get result.
      * This will use {@link ErrorConverter#conv(Throwable)} to convert result
-     *
      */
     static <T> Result<T> run(Supplier<T> v) {
         try {
             return ok(v.get());
         } catch (Exception e) {
-            return new Failure<>( ErrorConverter.conv(e));
+            return new Failure<>(ErrorConverter.conv(e));
         }
     }
+
     /**
      * Execute supplier to get result.
-     *
      */
     static <T> Result<T> run(Supplier<T> v, ErrorConverter converter) {
         try {

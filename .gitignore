@@ -9,3 +9,5 @@ out/
 target/
 enhance.properties
 codegen.properties
+codegen.conf
+ide/

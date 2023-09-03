@@ -16,7 +16,6 @@
 package cn.zenliu.classes;
 
 import lombok.NonNull;
-import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

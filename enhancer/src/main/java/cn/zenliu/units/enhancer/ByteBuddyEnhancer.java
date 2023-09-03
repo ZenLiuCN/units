@@ -19,7 +19,6 @@ import cn.zenliu.units.codegen.Locator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import lombok.var;
 import net.bytebuddy.build.BuildLogger;
 import net.bytebuddy.build.Plugin;
 import net.bytebuddy.description.type.TypeDescription;
@@ -92,7 +91,7 @@ public class ByteBuddyEnhancer implements Plugin, EnhanceUtil {
     @Override
     public DynamicType.@NotNull Builder<?> apply(DynamicType.@NotNull Builder<?> builder, @NotNull TypeDescription type, @NotNull ClassFileLocator locator) {
         for (var jun : enhancers.keySet()) {
-            var ctx = Context.of(type, new ArrayList<>(), locator);
+            var ctx = new Context(type, new ArrayList<>(), locator);
             if (jun.matches(type)) {
                 for (var enc : enhancers.get(jun)) {
                     builder = enc.apply(builder, ctx, this);

@@ -17,7 +17,6 @@ package cn.zenliu.units.processor;
 
 import com.google.testing.compile.Compilation;
 import lombok.SneakyThrows;
-import lombok.var;
 
 import javax.tools.JavaFileObject;
 import java.nio.charset.StandardCharsets;
@@ -76,10 +75,10 @@ public interface TestTools {
 
     @SneakyThrows
     static void config(String content) {
-        Files.write(Paths.get("codegen.properties"), String.format(("debug=%s\n%s\n"), print, content).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(Paths.get("codegen.conf"), String.format(("debug=%s\n%s\n"), print, content).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     static void delete() {
-        Paths.get("codegen.properties").toFile().deleteOnExit();
+        Paths.get("codegen.conf").toFile().deleteOnExit();
     }
 }

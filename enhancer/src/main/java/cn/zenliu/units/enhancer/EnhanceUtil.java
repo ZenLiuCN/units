@@ -15,7 +15,7 @@
 
 package cn.zenliu.units.enhancer;
 
-import lombok.var;
+
 import net.bytebuddy.build.BuildLogger;
 import org.slf4j.helpers.MessageFormatter;
 

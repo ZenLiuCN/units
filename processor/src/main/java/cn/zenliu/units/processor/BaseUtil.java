@@ -23,7 +23,6 @@ import cn.zenliu.units.processor.util.Annotated;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
-import lombok.var;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;

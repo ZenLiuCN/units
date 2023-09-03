@@ -16,8 +16,9 @@
 package cn.zenliu.units.codegen;
 
 import cn.zenliu.classes.Classes;
+import cn.zenliu.units.conf.Conf;
+import com.typesafe.config.ConfigFactory;
 import lombok.SneakyThrows;
-import lombok.var;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
@@ -49,6 +50,8 @@ public interface Configure {
         Optional<Boolean> readBoolean(String key);
 
         Optional<String> readString(String key);
+
+        Optional<List<String>> readStrings(String key);
 
         <E extends Enum<E>> Optional<E> readEnum(String key, Class<E> enumType);
 
@@ -210,7 +213,7 @@ public interface Configure {
     }
 
     /**
-     * default implement with 'codegen.properties' as configuration file.<br/>
+     * default implement with 'codegen.conf' as configuration file.<br/>
      * only support maven/gradle as build tool.<br/>
      * use 'generators' with comma separated class names for enabled CodeGenerator. <br/>
      */
@@ -263,6 +266,19 @@ public interface Configure {
             }
 
             @Override
+            public Optional<List<String>> readStrings(String key) {
+                return read(key, s -> {
+                    var lst = new ArrayList<String>();
+                    for (var v : s.split(",")) {
+                        if (!v.isBlank()) {
+                            lst.add(v);
+                        }
+                    }
+                    return lst;
+                });
+            }
+
+            @Override
             public <E extends Enum<E>> Optional<E> readEnum(String key, Class<E> enumType) {
                 return read(key, x -> Enum.valueOf(enumType, x));
             }
@@ -280,6 +296,71 @@ public interface Configure {
             @Override
             public Optional<Class<?>> readClass(String key) {
                 return read(key, Classes::forName);
+            }
+        }
+
+        static class HOCONConfig extends Conf.Core implements Config {
+            HOCONConfig(com.typesafe.config.Config c) {
+                super(c);
+            }
+
+            static HOCONConfig from(Set<Path> files) {
+                com.typesafe.config.Config c = null;
+                for (var file : files) {
+                    var cc = ConfigFactory.parseFile(file.toFile());
+                    if (c != null) {
+                        c.resolveWith(cc);
+                    } else {
+                        c = cc;
+                    }
+                }
+                return c == null ? null : new HOCONConfig(c);
+
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return super.bool("enabled", true);
+            }
+
+            @Override
+            public boolean isDebug() {
+                return super.bool("debug", false);
+            }
+
+            @Override
+            public Optional<Boolean> readBoolean(String key) {
+                return super.bool(key);
+            }
+
+            @Override
+            public Optional<String> readString(String key) {
+                return super.string(key);
+            }
+
+            @Override
+            public Optional<List<String>> readStrings(String key) {
+                return super.stringList(key);
+            }
+
+            @Override
+            public <E extends Enum<E>> Optional<E> readEnum(String key, Class<E> enumType) {
+                return super.enumerate(key, enumType);
+            }
+
+            @Override
+            public Optional<Integer> readInteger(String key) {
+                return super.int32(key);
+            }
+
+            @Override
+            public Optional<BigDecimal> readDecimal(String key) {
+                return super.decimal(key);
+            }
+
+            @Override
+            public Optional<Class<?>> readClass(String key) {
+                return super.string(key).map(Classes::forName);
             }
         }
 
@@ -304,7 +385,7 @@ public interface Configure {
 
         @Override
         public Config build(Set<Path> files) {
-            return new PropertyConfig(files);
+            return HOCONConfig.from(files);
         }
 
         private BuildType buildType;

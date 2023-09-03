@@ -18,7 +18,6 @@ package cn.zenliu.units.processor;
 import cn.zenliu.classes.Classes;
 import cn.zenliu.units.codegen.Configure;
 import cn.zenliu.units.processor.unit.CodeGenerator;
-import lombok.var;
 
 import javax.lang.model.element.Element;
 import java.net.URI;
@@ -66,20 +65,20 @@ public interface Configurer extends Configure {
     class DefaultImpl extends Configure.DefaultConfigure implements Configurer {
 
         public DefaultImpl() {
-            super("process.properties");
+            super("codegen.conf");
         }
 
         @Override
         public Map<String, Set<CodeGenerator>> generators() {
             assert root != null;
             if (!root.isEnabled()) return Collections.emptyMap();
-            var classes = root.readString("generators").orElse(null);
+            var classes = root.readStrings("generators").orElse(null);
             if (classes == null) {
                 error("Missing properties key 'generators', none of CodeGenerator will be used");
                 return Collections.emptyMap();
             }
             var map = new HashMap<String, Set<CodeGenerator>>();
-            for (String name : classes.split(",")) {
+            for (String name : classes) {
                 var gen = Classes.loadClass(CodeGenerator.class, name.trim());
                 for (String type : gen.acceptTypes()) {
                     var set = map.computeIfAbsent(type.trim(), $ -> new HashSet<>());

@@ -16,7 +16,6 @@
 package cn.zenliu.units.enhancer;
 
 import com.google.testing.compile.JavaFileObjects;
-import lombok.var;
 import org.junit.jupiter.api.Test;
 
 import static cn.zenliu.units.enhancer.TestTools.*;
@@ -26,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ByteBuddyEnhancerTest {
     @Test
     void simple() {
-        config("enhancers=cn.zenliu.units.enhancer.Simple");
+        config("enhancers:[cn.zenliu.units.enhancer.Simple]");
         var c = compile(JavaFileObjects.forSourceString("some.TestEnhance", "package some;\n" +
                 "@cn.zenliu.units.enhancer.SimpleAnno\n" +
                 "interface TestEnhance{}"));

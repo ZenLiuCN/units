@@ -20,7 +20,6 @@ import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import lombok.var;
 import net.bytebuddy.ClassFileVersion;
 import net.bytebuddy.build.BuildLogger;
 import net.bytebuddy.build.EntryPoint;
@@ -91,11 +90,11 @@ public interface TestTools {
 
     @SneakyThrows
     static void config(String content) {
-        Files.write(Paths.get("enhance.properties"), String.format(("debug=%s\n%s\n"), print, content).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(Paths.get("codegen.conf"), String.format(("debug=%s\n%s\n"), print, content).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     static void delete() {
-        Paths.get("enhance.properties").toFile().deleteOnExit();
+        Paths.get("codegen.conf").toFile().deleteOnExit();
     }
 
     @SneakyThrows

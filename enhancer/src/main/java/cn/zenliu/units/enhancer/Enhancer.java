@@ -17,7 +17,6 @@ package cn.zenliu.units.enhancer;
 
 
 import cn.zenliu.units.codegen.Configure;
-import lombok.var;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;

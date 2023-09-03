@@ -15,7 +15,7 @@
 
 package cn.zenliu.units.processor.util;
 
-import lombok.var;
+
 import org.jetbrains.annotations.Nullable;
 
 import javax.lang.model.element.AnnotationMirror;

@@ -28,6 +28,8 @@
         <module.name>units.conf</module.name>
     </properties>
     <artifactId>units-conf</artifactId>
+    <name>Conf</name>
+    <description>Extended units for use com.typesafe:config .</description>
     <dependencies>
         <dependency>
             <groupId>com.typesafe</groupId>

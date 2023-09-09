@@ -19,15 +19,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.github.zenliucn.units</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>io.github.zenliucn</groupId>
+        <artifactId>units</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <module.name>units.codec</module.name>
     </properties>
-    <artifactId>codec</artifactId>
+    <artifactId>units-codec</artifactId>
     <name>Codec</name>
     <description>Simple binary codec units base on netty-buffer</description>
     <dependencies>
@@ -42,8 +42,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>reflect</artifactId>
-            <version>${project.version}</version>
+            <artifactId>units-reflect</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

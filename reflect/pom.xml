@@ -19,15 +19,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.github.zenliucn.units</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>io.github.zenliucn</groupId>
+        <artifactId>units</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <module.name>units.reflect</module.name>
     </properties>
-    <artifactId>reflect</artifactId>
+    <artifactId>units-reflect</artifactId>
     <name>Reflect</name>
     <description>Reflect: enhance reflect tools</description>
     <dependencies>

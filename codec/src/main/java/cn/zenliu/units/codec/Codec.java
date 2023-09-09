@@ -16,6 +16,8 @@
 package cn.zenliu.units.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import lombok.Cleanup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -250,8 +252,9 @@ public interface Codec {
         if (value == null) return Codec.zigZagVarInt32(buf, -1);
         else if (value.isEmpty()) return Codec.zigZagVarInt32(buf, 0);
         else {
-            var b = value.getBytes(StandardCharsets.UTF_8);
-            Codec.zigZagVarInt32(buf, b.length);
+            @Cleanup("release") var b = ByteBufAllocator.DEFAULT.buffer();
+            var n = b.writeCharSequence(value, StandardCharsets.UTF_8);
+            Codec.zigZagVarInt32(buf, n);
             return buf.writeBytes(b);
         }
     }
@@ -260,9 +263,7 @@ public interface Codec {
         var n = Codec.zigZagVarInt32(buf);
         if (n < 0) return null;
         if (n == 0) return "";
-        var b = new byte[n];
-        buf.readBytes(b);
-        return new String(b, StandardCharsets.UTF_8);
+        return buf.readSlice(n).toString(StandardCharsets.UTF_8);
     }
 
     static ByteBuf encodeAnyArray(ByteBuf buf, Object value, BiConsumer<ByteBuf, Object> writer) {

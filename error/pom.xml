@@ -19,15 +19,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.github.zenliucn.units</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>io.github.zenliucn</groupId>
+        <artifactId>units</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
-        <module.name>units.errors</module.name>
+        <module.name>units.error</module.name>
     </properties>
-    <artifactId>error</artifactId>
+    <artifactId>units-error</artifactId>
     <name>Error</name>
     <description>Error units, includes DomainError and Result.</description>
     <dependencies>

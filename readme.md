@@ -7,13 +7,15 @@
 </p>
 
 # Units
- Tools for java
+
+Tools for java
 
 ## License
 
 License as `GPL v2 with classpath exception`.
 
 # Modules
+
 1. ~~binary: a simple byte[] reader writer.~~ *removed in `0.1.x`* .
 2. classes: units method for class.
 3. codec: netty-buffer codec. *new in `0.1.x`* .
@@ -23,14 +25,18 @@ License as `GPL v2 with classpath exception`.
 7. codegen: Basic components for compile time code generate or class enhance.
 8. processor: A framework for write CodeGenerator with APT process. JavaPoet required at classpath to enable processors.
 9. enhancer: A framework for bytecode enhance on compile time. ByteBuddy required, and also compile time plugin.
+10. ~~bom: bill of materials~~ , use `units` (the parent pom) instead, *from `0.1.2+`*.
 
 # Processor
+
 1. Requires [JavaPoet](https://github.com/square/javapoet) to run;
 2. Requires [slf4j-api](https://www.qos.ch/) to run;
 3. Property `debug` to enable Locator debug print;
 4. HOCON `codegen.conf` to config processors;
+
 # Enhancer
-1. Requires [ByteBuddy](https://bytebuddy.net/) to run; 
+
+1. Requires [ByteBuddy](https://bytebuddy.net/) to run;
 2. Requires [slf4j-api](https://www.qos.ch/) to run;
 3. Requires ByteBuddy Plugin for build tool maven or gradle. Eg:
     ```xml
@@ -62,7 +68,13 @@ License as `GPL v2 with classpath exception`.
     ```
 4. Property `debug` to enable Locator debug print;
 5. HOCON `codegen.conf` to config processors;
+
 # Reflect
+
 1. Requires [Caffeine](https://github.com/ben-manes/caffeine) to run.
+
 # Note
- `main` branch had dump to support java 17+, versions start with `0.1.x`. older version remains under `0.x` branch and versions are limit to `0.0.x`.
+
+1. `main` branch had dump to support java 17+, versions start with `0.1.x`. older version remains under `0.x` branch and
+   versions are limit to `0.0.x`.
+2. from `0.1.2` BOM module removed, use `io.github.zenliucn:units:0.1.x` instead. 

@@ -19,32 +19,29 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>io.github.zenliucn.units</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>io.github.zenliucn</groupId>
+        <artifactId>units</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <module.name>units.codegen</module.name>
     </properties>
-    <artifactId>codegen</artifactId>
+    <artifactId>units-codegen</artifactId>
     <name>CodeGen</name>
     <description>code generate basic units</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>codec</artifactId>
-            <version>${project.version}</version>
+            <artifactId>units-codec</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>conf</artifactId>
-            <version>${project.version}</version>
+            <artifactId>units-conf</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>classes</artifactId>
-            <version>${project.version}</version>
+            <artifactId>units-classes</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

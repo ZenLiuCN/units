@@ -27,7 +27,6 @@
         <module>codec</module>
         <module>enhancer</module>
         <module>reflect</module>
-        <module>bom</module>
         <module>conf</module>
     </modules>
 
@@ -46,42 +45,46 @@
         <!--//endregion -->
 
         <!--//region Maven Plugins -->
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
-        <os-maven-plugin.version>1.7.0</os-maven-plugin.version>
+        <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <!--//endregion -->
 
         <!--//region Annotation Processors -->
-        <versions.lombok>1.18.24</versions.lombok>
-        <versions.auto-service>1.0.1</versions.auto-service>
+        <versions.lombok>1.18.28</versions.lombok>
+        <versions.auto-service>1.1.1</versions.auto-service>
         <versions.jetbrains-annotations>23.0.0</versions.jetbrains-annotations>
         <versions.jackson-annotations>2.13.5</versions.jackson-annotations>
-        <versions.immutables>2.9.2</versions.immutables>
-        <versions.mapstruct>1.5.3.Final</versions.mapstruct>
+        <versions.immutables>2.9.3</versions.immutables>
+        <versions.mapstruct>1.5.5.Final</versions.mapstruct>
         <versions.lombok-mapstruct>0.2.0</versions.lombok-mapstruct>
-        <versions.junit5>5.9.2</versions.junit5>
+        <versions.junit5>5.10.0</versions.junit5>
         <versions.typesafe-config>1.4.2</versions.typesafe-config>
         <!--//endregion -->
 
         <!--//region API -->
-        <versions.slf4j>2.0.6</versions.slf4j>
+        <versions.slf4j>2.0.9</versions.slf4j>
         <!--//endregion -->
 
         <!--//region Components -->
-        <versions.caffeine>2.9.3</versions.caffeine>
+        <versions.caffeine>3.1.8</versions.caffeine>
         <versions.javapoet>1.13.0</versions.javapoet>
-        <versions.byte-buddy>1.14.4</versions.byte-buddy>
+        <versions.byte-buddy>1.14.7</versions.byte-buddy>
         <versions.netty>4.1.94.Final</versions.netty>
+
+        <versions.compile-testing>0.21.0</versions.compile-testing>
+        <versions.logback-classic>1.4.11</versions.logback-classic>
         <!--//endregion -->
+
 
         <module.name>units</module.name>
     </properties>
@@ -186,14 +189,57 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.4.7</version>
+                <version>${versions.logback-classic}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.testing.compile</groupId>
                 <artifactId>compile-testing</artifactId>
-                <version>0.21.0</version>
+                <version>${versions.compile-testing}</version>
                 <scope>test</scope>
+            </dependency>
+            <!--//endregion -->
+
+            <!--//region BOM -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-codec</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-classes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-reflect</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-error</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-codegen</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-enhancer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-processor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>units-conf</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <!--//endregion -->
         </dependencies>
@@ -454,10 +500,10 @@
             <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-   <!--//endregion -->
+    <!--//endregion -->
 
-    <groupId>io.github.zenliucn.units</groupId>
-    <artifactId>parent</artifactId>
+    <groupId>io.github.zenliucn</groupId>
+    <artifactId>units</artifactId>
     <version>1.0-SNAPSHOT</version>
     <description>units parent</description>
 

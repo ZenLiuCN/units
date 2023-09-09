@@ -29,6 +29,6 @@
     </properties>
     <artifactId>units-classes</artifactId>
     <name>Classes</name>
-    <description>units for classes and classes loaders.</description>
+    <description>Units of tool for class and class loading. Also with some tool type.</description>
 
 </project>

@@ -25,7 +25,7 @@ License as `GPL v2 with classpath exception`.
 7. codegen: Basic components for compile time code generate or class enhance.
 8. processor: A framework for write CodeGenerator with APT process. JavaPoet required at classpath to enable processors.
 9. enhancer: A framework for bytecode enhance on compile time. ByteBuddy required, and also compile time plugin.
-10. ~~bom: bill of materials~~ , use `units` (the parent pom) instead, *from `0.1.2+`*.
+10. ~~bom: bill of materials~~ , use `units` (the parent pom) instead, *from `0.1.1+`*.
 
 # Processor
 
@@ -77,4 +77,4 @@ License as `GPL v2 with classpath exception`.
 
 1. `main` branch had dump to support java 17+, versions start with `0.1.x`. older version remains under `0.x` branch and
    versions are limit to `0.0.x`.
-2. from `0.1.2` BOM module removed, use `io.github.zenliucn:units:0.1.x` instead. 
+2. Start with version `0.1.1` BOM module removed, use `io.github.zenliucn:units:0.1.x` instead. 

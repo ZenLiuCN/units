@@ -159,6 +159,11 @@ public interface Invoker {
     static Invoker build(MethodHandles.Lookup lookup, MethodHandle handle, boolean isStatic, boolean isVarArgs, boolean hasReturn, int argumentCounts) {
         MethodType sam = handle.type().wrap().generic();
         MethodType src = handle.type().wrap();
+        if (!hasReturn) {
+            sam = sam.changeReturnType(void.class);
+            src = src.changeReturnType(void.class);
+        }
+
         if (isVarArgs && argumentCounts == 1) {
             if (isStatic && hasReturn)
                 return (Invoker) (sv11) LambdaMetafactory.metafactory(

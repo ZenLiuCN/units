@@ -14,6 +14,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.*;
 import java.time.Duration;
 import java.util.*;
@@ -179,7 +180,7 @@ public interface Ref<E> {
     }
 
     //endregion
-
+    @SuppressWarnings("SpellCheckingInspection")
     @UtilityClass
     final class $ {
         @Getter
@@ -308,32 +309,32 @@ public interface Ref<E> {
 
 
         @SneakyThrows
-        static Object invoke(Method m, Object self, Object... param) {
+        public static Object invoke(Method m, Object self, Object... param) {
             return m.invoke(self, param);
         }
 
         @SneakyThrows
-        static Object invoke(MethodHandle m, Object self, Object... param) {
+        public  static Object invoke(MethodHandle m, Object self, Object... param) {
             return m.bindTo(self).invokeWithArguments(param);
         }
 
         @SneakyThrows
-        static Class<?> forName(String fqn) {
+        public  static Class<?> forName(String fqn) {
             return Class.forName(fqn);
         }
 
         @SneakyThrows
-        static Method declared(Class<?> type, String name, Class<?>... param) {
+        public  static Method declared(Class<?> type, String name, Class<?>... param) {
             return type.getDeclaredMethod(name, param);
         }
 
         @SneakyThrows
-        static Field declaredField(Class<?> type, String name) {
+        public  static Field declaredField(Class<?> type, String name) {
             return type.getDeclaredField(name);
         }
 
         @SneakyThrows
-        static Method declaredMethod0(Class<?> type, String name, Class<?>... parameters) {
+        public  static Method declaredMethod0(Class<?> type, String name, Class<?>... parameters) {
             for (var f : Class$getDeclaredMethods0.get().apply(type)) {
                 if (f.getName().equals(name) && Arrays.equals(f.getParameterTypes(), parameters)) {
                     return access(f);
@@ -343,7 +344,7 @@ public interface Ref<E> {
         }
 
         @SneakyThrows
-        static Field declaredField0(Class<?> type, String name) {
+        public  static Field declaredField0(Class<?> type, String name) {
             for (var f : Class$getDeclaredFields0.get().apply(type)) {
                 if (f.getName().equals(name)) {
                     return access(f);
@@ -374,6 +375,19 @@ public interface Ref<E> {
             return lookup.unreflect(m);
         }
 
+        @SneakyThrows
+        public static VarHandle unreflectVarhandle(Field m) {
+            return lookup.unreflectVarHandle(m);
+        }
+        @SneakyThrows
+        public static MethodHandle unreflectSpeical(Method m, Class<?> target) {
+            return lookup.unreflectSpecial(m, target);
+        }
+
+        @SneakyThrows
+        public static MethodHandle unreflectGetter(Field m) {
+            return lookup.unreflectGetter(m);
+        }
 
         @SuppressWarnings("rawtypes")
         @SneakyThrows
@@ -381,7 +395,7 @@ public interface Ref<E> {
             return (T) constructor.newInstance(args);
         }
 
-        Lazy<Function<Class<?>, MethodHandles.Lookup>> Lookup$Constructor = lazy(() -> {
+        public static final  Lazy<Function<Class<?>, MethodHandles.Lookup>> Lookup$Constructor = lazy(() -> {
             var m = access(
                     version < 14 ? declared(MethodHandles.Lookup.class, Class.class, int.class)
                             //checked in OpenJDK repository changed in
@@ -400,7 +414,7 @@ public interface Ref<E> {
             );
             return x -> (MethodHandles.Lookup) instance(m, x, null, mode);
         });
-        MethodHandles.Lookup lookup = Lookup$Constructor.get().apply(Ref.class);
+        public static final MethodHandles.Lookup lookup = Lookup$Constructor.get().apply(Ref.class);
         //region 9+
         Lazy<Function<Class<?>, Object>> Class$getModule = lazy(() -> {
             if (version <= 8) return x -> null;
@@ -541,28 +555,28 @@ public interface Ref<E> {
         //endregion
 
         //region Finders
-        static Method[] findMethods(Class<?> type) {
+        public   static Method[] findMethods(Class<?> type) {
             if (version >= 12) {
                 return Class$getDeclaredMethods0.get().apply(type);
             }
             return type.getDeclaredMethods();
         }
 
-        static Field[] findFields(Class<?> type) {
+        public     static Field[] findFields(Class<?> type) {
             if (version >= 12) {
                 return Class$getDeclaredFields0.get().apply(type);
             }
             return type.getDeclaredFields();
         }
 
-        static Constructor<?>[] findConstructors(Class<?> type) {
+        public   static Constructor<?>[] findConstructors(Class<?> type) {
             if (version >= 12) {
                 return Class$getDeclaredConstructors0.get().apply(type);
             }
             return type.getDeclaredConstructors();
         }
 
-        static Field find(Class<?> declared, String name, Class<?> type) {
+        public   static Field find(Class<?> declared, String name, Class<?> type) {
             for (var v : fields.get(declared)) {
                 if (v.getName().equals(name)) {
                     if (type == null || type == v.getType()) return v;
@@ -571,7 +585,7 @@ public interface Ref<E> {
             return null;
         }
 
-        static Method find(Class<?> declared, String name, Class<?> returnType, Class<?>... parameters) {
+        public  static Method find(Class<?> declared, String name, Class<?> returnType, Class<?>... parameters) {
             for (var v : methods.get(declared)) {
                 if (v.getName().equals(name) && Arrays.equals(v.getParameterTypes(), parameters)) {
                     if (returnType == null || returnType == v.getReturnType()) return v;
@@ -580,7 +594,7 @@ public interface Ref<E> {
             return null;
         }
 
-        static Constructor<?> find(Class<?> declared, Class<?>... parameters) {
+        public   static Constructor<?> find(Class<?> declared, Class<?>... parameters) {
             for (var v : constructors.get(declared)) {
                 if (Arrays.equals(v.getParameterTypes(), parameters)) {
                     return v;
@@ -2166,8 +2180,6 @@ public interface Ref<E> {
             }
         }
     }
-
-
 
 
     /**

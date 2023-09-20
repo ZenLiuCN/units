@@ -1348,7 +1348,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance);
+        void i(Object instance);
 
         @Override
         default int args() {
@@ -1381,7 +1381,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0);
+        void i(Object instance, Object a0);
 
         @Override
         default int args() {
@@ -1396,7 +1396,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1);
+        void i(Object instance, Object a0, Object a1);
 
         @Override
         default int args() {
@@ -1411,7 +1411,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2);
+        void i(Object instance, Object a0, Object a1, Object a2);
 
         @Override
         default int args() {
@@ -1426,7 +1426,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3);
 
         @Override
         default int args() {
@@ -1441,7 +1441,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4);
 
         @Override
         default int args() {
@@ -1456,7 +1456,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5);
 
         @Override
         default int args() {
@@ -1471,7 +1471,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6);
 
         @Override
         default int args() {
@@ -1486,7 +1486,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7);
 
         @Override
         default int args() {
@@ -1501,7 +1501,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8);
 
         @Override
         default int args() {
@@ -1530,7 +1530,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9);
 
         @Override
         default int args() {
@@ -1559,7 +1559,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10);
 
         @Override
         default int args() {
@@ -1588,7 +1588,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11);
 
         @Override
         default int args() {
@@ -1617,7 +1617,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12);
 
         @Override
         default int args() {
@@ -1646,7 +1646,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13);
 
         @Override
         default int args() {
@@ -1675,7 +1675,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14);
 
         @Override
         default int args() {
@@ -1704,7 +1704,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15);
 
         @Override
         default int args() {
@@ -1733,7 +1733,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16);
 
         @Override
         default int args() {
@@ -1762,7 +1762,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17);
 
         @Override
         default int args() {
@@ -1791,7 +1791,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18);
 
         @Override
         default int args() {
@@ -1806,7 +1806,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19);
 
         @Override
         default int args() {
@@ -1821,7 +1821,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20);
 
         @Override
         default int args() {
@@ -1836,7 +1836,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21);
 
         @Override
         default int args() {
@@ -1851,7 +1851,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22);
 
         @Override
         default int args() {
@@ -1866,7 +1866,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23);
 
         @Override
         default int args() {
@@ -1881,7 +1881,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24);
 
         @Override
         default int args() {
@@ -1896,7 +1896,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25);
 
         @Override
         default int args() {
@@ -1911,7 +1911,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26);
 
         @Override
         default int args() {
@@ -1926,7 +1926,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26, Object a27);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26, Object a27);
 
         @Override
         default int args() {
@@ -1941,7 +1941,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26, Object a27, Object a28);
+        void i(Object instance, Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26, Object a27, Object a28);
 
         @Override
         default int args() {
@@ -2332,7 +2332,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i();
+        void i();
 
         @Override
         default int args() {
@@ -2366,7 +2366,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0);
+        void i(Object a0);
 
         @Override
         default int args() {
@@ -2382,7 +2382,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1);
+        void i(Object a0, Object a1);
 
         @Override
         default int args() {
@@ -2398,7 +2398,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2);
+        void i(Object a0, Object a1, Object a2);
 
         @Override
         default int args() {
@@ -2414,7 +2414,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3);
+        void i(Object a0, Object a1, Object a2, Object a3);
 
         @Override
         default int args() {
@@ -2430,7 +2430,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4);
 
         @Override
         default int args() {
@@ -2446,7 +2446,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5);
 
         @Override
         default int args() {
@@ -2462,7 +2462,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6);
 
         @Override
         default int args() {
@@ -2478,7 +2478,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7);
 
         @Override
         default int args() {
@@ -2494,7 +2494,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8);
 
         @Override
         default int args() {
@@ -2525,7 +2525,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9);
 
         @Override
         default int args() {
@@ -2556,7 +2556,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10);
 
         @Override
         default int args() {
@@ -2587,7 +2587,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11);
 
         @Override
         default int args() {
@@ -2618,7 +2618,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12);
 
         @Override
         default int args() {
@@ -2649,7 +2649,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13);
 
         @Override
         default int args() {
@@ -2680,7 +2680,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14);
 
         @Override
         default int args() {
@@ -2711,7 +2711,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15);
 
         @Override
         default int args() {
@@ -2742,7 +2742,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16);
 
         @Override
         default int args() {
@@ -2773,7 +2773,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17);
 
         @Override
         default int args() {
@@ -2804,7 +2804,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18);
 
         @Override
         default int args() {
@@ -2820,7 +2820,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19);
 
         @Override
         default int args() {
@@ -2836,7 +2836,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20);
 
         @Override
         default int args() {
@@ -2852,7 +2852,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21);
 
         @Override
         default int args() {
@@ -2868,7 +2868,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22);
 
         @Override
         default int args() {
@@ -2884,7 +2884,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23);
 
         @Override
         default int args() {
@@ -2900,7 +2900,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24);
 
         @Override
         default int args() {
@@ -2916,7 +2916,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25);
 
         @Override
         default int args() {
@@ -2932,7 +2932,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26);
 
         @Override
         default int args() {
@@ -2964,7 +2964,7 @@ public interface Invoker {
             return null;
         }
 
-        Object i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26, Object a27, Object a28);
+        void i(Object a0, Object a1, Object a2, Object a3, Object a4, Object a5, Object a6, Object a7, Object a8, Object a9, Object a10, Object a11, Object a12, Object a13, Object a14, Object a15, Object a16, Object a17, Object a18, Object a19, Object a20, Object a21, Object a22, Object a23, Object a24, Object a25, Object a26, Object a27, Object a28);
 
         @Override
         default int args() {

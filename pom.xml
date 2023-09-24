@@ -461,7 +461,7 @@
         <!--//endregion -->
     </dependencies>
 
-   <!--//region deploy -->
+    <!--//region deploy -->
     <name>Java Units</name>
     <url>https://github.com/ZenLiuCN/units</url>
     <developers>
@@ -505,7 +505,7 @@
     <groupId>io.github.zenliucn</groupId>
     <artifactId>units</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <description>units parent</description>
+    <description>units parent and bom</description>
 
 
 </project>

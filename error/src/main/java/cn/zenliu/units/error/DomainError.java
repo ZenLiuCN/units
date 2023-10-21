@@ -126,6 +126,18 @@ public class DomainError extends RuntimeException {
     }
 
     /**
+     * create a Domain Error with no user message
+     *
+     * @param code    the error code
+     * @param pattern the message pattern in a SLF4j style.
+     * @param args    the arguments
+     * @return throwable
+     */
+    public static DomainError errorSys(int code, String pattern, Object... args) {
+        return error(code, TranslatorHolder.get(), pattern, null, -2, args);
+    }
+
+    /**
      * use detailed message control.
      *
      * @param code   the error code
@@ -158,6 +170,10 @@ public class DomainError extends RuntimeException {
         return error(CODE_BAD_REQUEST, pattern, args);
     }
 
+    public static DomainError badRequestSys(String pattern, Object... args) {
+        return errorSys(CODE_BAD_REQUEST, pattern, args);
+    }
+
 
     public static DomainError badRequest(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_BAD_REQUEST, system, user, from, args);
@@ -165,6 +181,10 @@ public class DomainError extends RuntimeException {
 
     public static DomainError unauthorized(String pattern, Object... args) {
         return error(CODE_UNAUTHORIZED, pattern, args);
+    }
+
+    public static DomainError unauthorizedSys(String pattern, Object... args) {
+        return errorSys(CODE_UNAUTHORIZED, pattern, args);
     }
 
 
@@ -176,6 +196,10 @@ public class DomainError extends RuntimeException {
         return error(CODE_FORBIDDEN, pattern, args);
     }
 
+    public static DomainError forbiddenSys(String pattern, Object... args) {
+        return errorSys(CODE_FORBIDDEN, pattern, args);
+    }
+
 
     public static DomainError forbidden(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_FORBIDDEN, system, user, from, args);
@@ -183,6 +207,10 @@ public class DomainError extends RuntimeException {
 
     public static DomainError notFound(String pattern, Object... args) {
         return error(CODE_NOT_FOUND, pattern, args);
+    }
+
+    public static DomainError notFoundSys(String pattern, Object... args) {
+        return errorSys(CODE_NOT_FOUND, pattern, args);
     }
 
 
@@ -194,6 +222,10 @@ public class DomainError extends RuntimeException {
         return error(CODE_TIMEOUT, pattern, args);
     }
 
+    public static DomainError timeoutSys(String pattern, Object... args) {
+        return errorSys(CODE_TIMEOUT, pattern, args);
+    }
+
 
     public static DomainError timeout(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_TIMEOUT, system, user, from, args);
@@ -201,6 +233,10 @@ public class DomainError extends RuntimeException {
 
     public static DomainError conflict(String pattern, Object... args) {
         return error(CODE_CONFLICT, pattern, args);
+    }
+
+    public static DomainError conflictSys(String pattern, Object... args) {
+        return errorSys(CODE_CONFLICT, pattern, args);
     }
 
 
@@ -212,6 +248,10 @@ public class DomainError extends RuntimeException {
         return error(CODE_GONE, pattern, args);
     }
 
+    public static DomainError goneSys(String pattern, Object... args) {
+        return errorSys(CODE_GONE, pattern, args);
+    }
+
 
     public static DomainError gone(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_GONE, system, user, from, args);
@@ -221,6 +261,10 @@ public class DomainError extends RuntimeException {
         return error(CODE_INTERNAL, pattern, args);
     }
 
+    public static DomainError internalSys(String pattern, Object... args) {
+        return errorSys(CODE_INTERNAL, pattern, args);
+    }
+
 
     public static DomainError internal(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_INTERNAL, system, user, from, args);
@@ -228,6 +272,10 @@ public class DomainError extends RuntimeException {
 
     public static DomainError unavailable(String pattern, Object... args) {
         return error(CODE_UNAVAILABLE, pattern, args);
+    }
+
+    public static DomainError unavailableSys(String pattern, Object... args) {
+        return errorSys(CODE_UNAVAILABLE, pattern, args);
     }
 
 

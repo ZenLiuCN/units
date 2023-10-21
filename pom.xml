@@ -60,15 +60,15 @@
         <!--//endregion -->
 
         <!--//region Annotation Processors -->
-        <versions.lombok>1.18.28</versions.lombok>
+        <versions.lombok>1.18.30</versions.lombok>
         <versions.auto-service>1.1.1</versions.auto-service>
         <versions.jetbrains-annotations>23.0.0</versions.jetbrains-annotations>
         <versions.jackson-annotations>2.13.5</versions.jackson-annotations>
-        <versions.immutables>2.9.3</versions.immutables>
+        <versions.immutables>2.10.0</versions.immutables>
         <versions.mapstruct>1.5.5.Final</versions.mapstruct>
         <versions.lombok-mapstruct>0.2.0</versions.lombok-mapstruct>
         <versions.junit5>5.10.0</versions.junit5>
-        <versions.typesafe-config>1.4.2</versions.typesafe-config>
+        <versions.typesafe-config>1.4.3</versions.typesafe-config>
         <!--//endregion -->
 
         <!--//region API -->
@@ -78,8 +78,8 @@
         <!--//region Components -->
         <versions.caffeine>3.1.8</versions.caffeine>
         <versions.javapoet>1.13.0</versions.javapoet>
-        <versions.byte-buddy>1.14.7</versions.byte-buddy>
-        <versions.netty>4.1.94.Final</versions.netty>
+        <versions.byte-buddy>1.14.9</versions.byte-buddy>
+        <versions.netty>4.1.100.Final</versions.netty>
 
         <versions.compile-testing>0.21.0</versions.compile-testing>
         <versions.logback-classic>1.4.11</versions.logback-classic>
@@ -451,7 +451,6 @@
             <scope>provided</scope>
         </dependency>
         <!--//endregion -->
-
         <!--//region Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

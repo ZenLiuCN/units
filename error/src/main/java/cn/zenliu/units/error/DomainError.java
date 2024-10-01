@@ -312,7 +312,7 @@ public class DomainError extends RuntimeException {
     public final int code;
     public final String user;
     public final String system;
-    private transient List<String> stacktrace;
+    protected transient List<String> stacktrace;
 
     protected void setStacktrace(List<String> trace) {
         this.stacktrace = trace;
@@ -333,24 +333,28 @@ public class DomainError extends RuntimeException {
         return new Tuple3<>(u == null ? null : u.getMessage(), s == null ? null : s.getMessage(), (u == null ? s : u).getThrowable());
     }
 
-    public List<String> stacktrace() {
-        if (stacktrace == null) {
-            var sb = new ByteArrayOutputStream(STACK_TRACE_SIZE.get());
-            this.printStackTrace(new PrintWriter(sb, true, StandardCharsets.UTF_8));
+    static public List<String> dumpStack(Throwable ex) {
+        List<String> out = List.of();
+        try (var sb = new ByteArrayOutputStream(STACK_TRACE_SIZE.get())) {
+            ex.printStackTrace(new PrintWriter(sb, true, StandardCharsets.UTF_8));
             var s = sb.toString();
             if (s != null && !s.isBlank()) {
-                var j = new ArrayList<String>();
+                out = new ArrayList<>();
                 for (var line : s.split("\n")) {
-                    j.add(line.replaceAll("\t", "    "));
+                    out.add(line.replaceAll("\t", "    "));
                 }
-                stacktrace = j;
             } else {
-                stacktrace = List.of(s);
+                out = s == null ? List.of() : List.of(s);
             }
-            try {
-                sb.close();
-            } catch (IOException ignored) {
-            }
+        } catch (IOException ignored) {
+
+        }
+        return out;
+    }
+
+    public List<String> stacktrace() {
+        if (stacktrace == null) {
+            stacktrace = dumpStack(this);
         }
         return stacktrace;
     }

@@ -17,13 +17,18 @@ package cn.zenliu.units.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 import org.slf4j.helpers.MessageFormatter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 /**
@@ -32,38 +37,41 @@ import java.util.function.Function;
  * @author Zen.Liu
  * @since 2023-05-04
  */
+
 @SuppressWarnings("unused")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DomainError extends RuntimeException {
-    /**
-     * Holder of translator use AtomicReference
-     */
-    @UtilityClass
-    public static class TranslatorHolder {
-        private static final AtomicReference<Function<String, String>> local = new AtomicReference<>();
 
-        public static @Nullable Function<String, String> get() {
-            return local.get();
-        }
+    public static final int CODE_BAD_REQUEST = 400;
+    public static final int CODE_UNAUTHORIZED = 401;
+    public static final int CODE_PAYMENT_REQUIRED = 402;
+    public static final int CODE_FORBIDDEN = 403;
+    public static final int CODE_NOT_FOUND = 404;
+    public static final int CODE_METHOD_NOT_ALLOWED = 405;
+    public static final int CODE_NOT_ACCEPTABLE = 406;
+    public static final int CODE_REQUEST_TIMEOUT = 408;
 
-        public static void set(@Nullable Function<String, String> translator) {
-            local.set(translator);
-        }
-    }
+    public static final int CODE_CONFLICT = 409;
+    public static final int CODE_GONE = 410;
+    public static final int CODE_PRECONDITION_FAILED = 412;
+    public static final int CODE_UNSUPPORTED_MEDIA_TYPE = 415;
+    public static final int CODE_UNSUPPORTED_TYPE = 416;
+    public static final int CODE_TOO_MANY_REQUESTS = 429;
+    public static final int CODE_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
+    public static final int CODE_INTERNAL_SERVER_ERROR = 500;
+    public static final int CODE_NOT_IMPLEMENTED = 501;
+    public static final int CODE_BAD_GATEWAY = 502;
+    public static final int CODE_SERVICE_UNAVAILABLE = 503;
+    public static final int CODE_GATEWAY_TIMEOUT = 504;
+    public static final int CODE_NETWORK_AUTHENTICATION_REQUIRED = 505;
+    @Deprecated
+    public static final int CODE_INTERNAL = CODE_INTERNAL_SERVER_ERROR;
+    @Deprecated
+    public static final int CODE_TIMEOUT = CODE_REQUEST_TIMEOUT;
+    @Deprecated
+    public static final int CODE_UNAVAILABLE = CODE_SERVICE_UNAVAILABLE;
 
-    static String translate(@Nullable Function<String, String> translator, @Nullable String key) {
-        try {
-            if (key == null) return null;
-            if (translator == null) return key;
-            var v = translator.apply(key);
-            if (v == null) return key;
-            return v;
-        } catch (Exception ex) {
-            System.err.println("translate error " + key);
-            ex.printStackTrace();
-            return key;
-        }
-    }
+    //region Deprecated functions
 
     /**
      * use detailed message control.
@@ -79,9 +87,12 @@ public class DomainError extends RuntimeException {
      *                   >0 for the cut point for user pattern arguments,system pattern use full-length arguments; <br/>
      * @param args       all args
      * @return DomainError
+     * @deprecated will be removed soon
      */
+    @Deprecated
     public static DomainError error(int code, Function<String, String> translator, String system, String user, int from, Object... args) {
-        if (args.length == 0) return new DomainError(code, translate(translator, user), translate(translator, system));
+        if (args.length == 0)
+            return new DomainError(code, translate(translator, user), translate(translator, system), null);
         assert from < args.length : "user message argument start point longer than arguments";
         switch (from) {
             case -2 -> {
@@ -112,73 +123,38 @@ public class DomainError extends RuntimeException {
 
     }
 
-
-    /**
-     * use same message as user message and system message (which inside {@link Exception#getMessage()})
-     *
-     * @param code    the error code
-     * @param pattern the message pattern in a SLF4j style.
-     * @param args    the arguments
-     * @return throwable
-     */
-    public static DomainError error(int code, String pattern, Object... args) {
-        return error(code, TranslatorHolder.get(), null, pattern, 0, args);
+    static String translate(@Nullable Function<String, String> translator, @Nullable String key) {
+        try {
+            if (key == null) return null;
+            if (translator == null) return key;
+            var v = translator.apply(key);
+            if (v == null) return key;
+            return v;
+        } catch (Exception ex) {
+            System.err.println("translate error " + key);
+            ex.printStackTrace();
+            return key;
+        }
     }
 
-    /**
-     * create a Domain Error with no user message
-     *
-     * @param code    the error code
-     * @param pattern the message pattern in a SLF4j style.
-     * @param args    the arguments
-     * @return throwable
-     */
-    public static DomainError errorSys(int code, String pattern, Object... args) {
-        return error(code, TranslatorHolder.get(), pattern, null, -2, args);
-    }
-
-    /**
-     * use detailed message control.
-     *
-     * @param code   the error code
-     * @param system system message pattern, null for not use.
-     * @param user   user message pattern, null for not use.
-     * @param from   start of argument index for user message:<br/>
-     *               -2 for no user pattern arguments;<br/>
-     *               -1 for both use full-length of arguments;<br/>
-     *               0 for no system pattern arguments;<br/>
-     *               >0 for the cut point for user pattern arguments,system pattern use full-length arguments; <br/>
-     * @param args   all args
-     * @return DomainError
-     */
-    public static DomainError error(int code, String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(code, TranslatorHolder.get(), system, user, from, args);
-
-    }
-
-    public static final int CODE_BAD_REQUEST = 400;
-    public static final int CODE_UNAUTHORIZED = 401;
-    public static final int CODE_FORBIDDEN = 403;
-    public static final int CODE_NOT_FOUND = 404;
-    public static final int CODE_TIMEOUT = 408;
-    public static final int CODE_CONFLICT = 409;
-    public static final int CODE_GONE = 510;
-    public static final int CODE_INTERNAL = 500;
-    public static final int CODE_UNAVAILABLE = 503;
+    @Deprecated
 
     public static DomainError badRequest(String pattern, Object... args) {
         return error(CODE_BAD_REQUEST, pattern, args);
     }
 
+    @Deprecated
     public static DomainError badRequestSys(String pattern, Object... args) {
         return errorSys(CODE_BAD_REQUEST, pattern, args);
     }
 
+    @Deprecated
 
     public static DomainError badRequest(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_BAD_REQUEST, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError unauthorized(String pattern, Object... args) {
         return error(CODE_UNAUTHORIZED, pattern, args);
     }
@@ -187,100 +163,129 @@ public class DomainError extends RuntimeException {
         return errorSys(CODE_UNAUTHORIZED, pattern, args);
     }
 
+    @Deprecated
 
     public static DomainError unauthorized(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_UNAUTHORIZED, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError forbidden(String pattern, Object... args) {
         return error(CODE_FORBIDDEN, pattern, args);
     }
 
+    @Deprecated
     public static DomainError forbiddenSys(String pattern, Object... args) {
         return errorSys(CODE_FORBIDDEN, pattern, args);
     }
 
+    @Deprecated
 
     public static DomainError forbidden(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_FORBIDDEN, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError notFound(String pattern, Object... args) {
         return error(CODE_NOT_FOUND, pattern, args);
     }
 
+    @Deprecated
     public static DomainError notFoundSys(String pattern, Object... args) {
         return errorSys(CODE_NOT_FOUND, pattern, args);
     }
 
+    @Deprecated
 
     public static DomainError notFound(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_NOT_FOUND, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError timeout(String pattern, Object... args) {
         return error(CODE_TIMEOUT, pattern, args);
     }
 
+    @Deprecated
     public static DomainError timeoutSys(String pattern, Object... args) {
         return errorSys(CODE_TIMEOUT, pattern, args);
     }
 
-
+    @Deprecated
     public static DomainError timeout(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_TIMEOUT, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError conflict(String pattern, Object... args) {
         return error(CODE_CONFLICT, pattern, args);
     }
 
+    @Deprecated
     public static DomainError conflictSys(String pattern, Object... args) {
         return errorSys(CODE_CONFLICT, pattern, args);
     }
 
+    @Deprecated
 
     public static DomainError conflict(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_CONFLICT, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError gone(String pattern, Object... args) {
         return error(CODE_GONE, pattern, args);
     }
 
+    @Deprecated
     public static DomainError goneSys(String pattern, Object... args) {
         return errorSys(CODE_GONE, pattern, args);
     }
 
-
+    @Deprecated
     public static DomainError gone(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_GONE, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError internal(String pattern, Object... args) {
         return error(CODE_INTERNAL, pattern, args);
     }
 
+    @Deprecated
     public static DomainError internalSys(String pattern, Object... args) {
         return errorSys(CODE_INTERNAL, pattern, args);
     }
 
-
+    @Deprecated
     public static DomainError internal(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_INTERNAL, system, user, from, args);
     }
 
+    @Deprecated
     public static DomainError unavailable(String pattern, Object... args) {
         return error(CODE_UNAVAILABLE, pattern, args);
     }
 
+    @Deprecated
     public static DomainError unavailableSys(String pattern, Object... args) {
         return errorSys(CODE_UNAVAILABLE, pattern, args);
     }
 
+    @Deprecated
 
     public static DomainError unavailable(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_UNAVAILABLE, system, user, from, args);
+    }
+
+    @Deprecated
+    public static DomainError error(int code, String userPattern, Object... args) {
+        return new DomainError(code, formatAll(userPattern, null, args));
+    }
+
+    @Deprecated
+    public static DomainError errorSys(int code, String systemPattern, Object... args) {
+        return new DomainError(code, formatAll(null, systemPattern, args));
     }
 
     @JsonProperty
@@ -288,40 +293,356 @@ public class DomainError extends RuntimeException {
         return code;
     }
 
+
     @JsonProperty
     public String message() {
-        return message;
+        return user == null ? system : user;
+    }
+    //endregion
+
+    public record Tuple2<V1, V2>(V1 v1, V2 v2) {
     }
 
-    final int code;
-    final String message;
-
-
-    protected DomainError() {
-        this(500, null, null);
+    public record Tuple3<V1, V2, V3>(V1 v1, V2 v2, V3 v3) {
     }
 
-    public DomainError(int code, @Nullable String message, @Nullable String systemMessage) {
-        super(systemMessage == null ? message : systemMessage);
-        this.message = message;
+    public static final AtomicInteger STACK_TRACE_SIZE = new AtomicInteger(1024);
+
+
+    public final int code;
+    public final String user;
+    public final String system;
+    private transient List<String> stacktrace;
+
+    static public Tuple2<String, Throwable> format(String pattern, Object... args) {
+        var o = MessageFormatter.format(pattern, args);
+        return new Tuple2<>(o.getMessage(), o.getThrowable());
+    }
+
+    static public Tuple3<String, String, Throwable> formatAll(@Nullable String userPattern, @Nullable String systemPattern, Object... args) {
+        if ((userPattern == null || userPattern.isBlank()) && (systemPattern == null || systemPattern.isBlank())) {
+            return new Tuple3<>(null, null, null);
+        }
+
+        var u = userPattern == null || userPattern.isBlank() ? null : MessageFormatter.format(userPattern, args);
+        var s = systemPattern == null || systemPattern.isBlank() ? null : MessageFormatter.format(systemPattern, args);
+        return new Tuple3<>(u == null ? null : u.getMessage(), s == null ? null : s.getMessage(), (u == null ? s : u).getThrowable());
+    }
+
+    public List<String> stacktrace() {
+        if (stacktrace == null) {
+            var sb = new ByteArrayOutputStream(STACK_TRACE_SIZE.get());
+            this.printStackTrace(new PrintWriter(sb, true, StandardCharsets.UTF_8));
+            var s = sb.toString();
+            if (s != null && !s.isBlank()) {
+                var j = new ArrayList<String>();
+                for (var line : s.split("\n")) {
+                    j.add(line.replaceAll("\t", "    "));
+                }
+                stacktrace = j;
+            } else {
+                stacktrace = List.of(s);
+            }
+            try {
+                sb.close();
+            } catch (IOException ignored) {
+            }
+        }
+        return stacktrace;
+    }
+
+    protected DomainError(int code, Tuple3<String, String, Throwable> u) {
+        super(u.v2 == null || u.v2.isBlank() ? u.v1 : u.v2, u.v3);
         this.code = code;
+        this.user = u.v1;
+        this.system = u.v2;
     }
 
-    protected DomainError(int code, String message, String systemMessage, Throwable cause) {
-        super(systemMessage == null ? message : systemMessage, cause);
-        this.message = message;
+    protected DomainError(int code, String user, String system, Throwable cause) {
+        super(system == null || system.isBlank() ? user : system, cause);
         this.code = code;
+        this.user = user;
+        this.system = system;
     }
 
-    protected DomainError(Throwable cause) {
-        super(cause);
-        this.message = null;
-        this.code = 500;
+    protected DomainError(int code, String user, String system, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(system == null || system.isBlank() ? user : system, cause, enableSuppression, writableStackTrace);
+        this.code = code;
+        this.user = user;
+        this.system = system;
     }
 
-    protected DomainError(String systemMessage, String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(systemMessage == null ? message : systemMessage, cause, enableSuppression, writableStackTrace);
-        this.message = message;
-        this.code = 500;
+
+    public static DomainError badRequest(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_BAD_REQUEST, user, system, cause);
     }
+
+    public static DomainError unauthorized(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_UNAUTHORIZED, user, system, cause);
+    }
+
+    public static DomainError paymentRequired(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_PAYMENT_REQUIRED, user, system, cause);
+    }
+
+    public static DomainError forbidden(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_FORBIDDEN, user, system, cause);
+    }
+
+    public static DomainError notFound(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_NOT_FOUND, user, system, cause);
+    }
+
+    public static DomainError methodNotAllowed(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_METHOD_NOT_ALLOWED, user, system, cause);
+    }
+
+    public static DomainError notAcceptable(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_NOT_ACCEPTABLE, user, system, cause);
+    }
+
+
+    public static DomainError requestTimeout(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_REQUEST_TIMEOUT, user, system, cause);
+    }
+
+    public static DomainError conflict(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_CONFLICT, user, system, cause);
+    }
+
+    public static DomainError gone(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_GONE, user, system, cause);
+    }
+
+
+    public static DomainError preconditionFailed(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_PRECONDITION_FAILED, user, system, cause);
+    }
+
+    public static DomainError unsupportedMediaType(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_UNSUPPORTED_MEDIA_TYPE, user, system, cause);
+    }
+
+    public static DomainError unsupportedType(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_UNSUPPORTED_TYPE, user, system, cause);
+    }
+
+    public static DomainError tooManyRequests(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_TOO_MANY_REQUESTS, user, system, cause);
+    }
+
+    public static DomainError unavailableForLegalReasons(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_UNAVAILABLE_FOR_LEGAL_REASONS, user, system, cause);
+    }
+
+    public static DomainError internalServerError(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_INTERNAL_SERVER_ERROR, user, system, cause);
+    }
+
+    public static DomainError notImplemented(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_NOT_IMPLEMENTED, user, system, cause);
+    }
+
+    public static DomainError badGateway(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_BAD_GATEWAY, user, system, cause);
+    }
+
+    public static DomainError serviceUnavailable(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_SERVICE_UNAVAILABLE, user, system, cause);
+    }
+
+    public static DomainError gatewayTimeout(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_GATEWAY_TIMEOUT, user, system, cause);
+    }
+
+    public static DomainError networkAuthenticationRequired(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(CODE_NETWORK_AUTHENTICATION_REQUIRED, user, system, cause);
+    }
+
+    public static DomainError badRequest(Tuple3<String, String, Throwable> u) {
+        return badRequest(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError unauthorized(Tuple3<String, String, Throwable> u) {
+        return unauthorized(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError paymentRequired(Tuple3<String, String, Throwable> u) {
+        return paymentRequired(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError forbidden(Tuple3<String, String, Throwable> u) {
+        return forbidden(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError notFound(Tuple3<String, String, Throwable> u) {
+        return notFound(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError methodNotAllowed(Tuple3<String, String, Throwable> u) {
+        return methodNotAllowed(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError notAcceptable(Tuple3<String, String, Throwable> u) {
+        return notAcceptable(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError proxyAuthenticationRequired(Tuple3<String, String, Throwable> u) {
+        return proxyAuthenticationRequired(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError requestTimeout(Tuple3<String, String, Throwable> u) {
+        return requestTimeout(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError conflict(Tuple3<String, String, Throwable> u) {
+        return conflict(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError gone(Tuple3<String, String, Throwable> u) {
+        return gone(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError lengthRequired(Tuple3<String, String, Throwable> u) {
+        return lengthRequired(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError preconditionFailed(Tuple3<String, String, Throwable> u) {
+        return preconditionFailed(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError unsupportedMediaType(Tuple3<String, String, Throwable> u) {
+        return unsupportedMediaType(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError unsupportedType(Tuple3<String, String, Throwable> u) {
+        return unsupportedType(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError tooManyRequests(Tuple3<String, String, Throwable> u) {
+        return tooManyRequests(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError unavailableForLegalReasons(Tuple3<String, String, Throwable> u) {
+        return unavailableForLegalReasons(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError internalServerError(Tuple3<String, String, Throwable> u) {
+        return internalServerError(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError notImplemented(Tuple3<String, String, Throwable> u) {
+        return notImplemented(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError badGateway(Tuple3<String, String, Throwable> u) {
+        return badGateway(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError serviceUnavailable(Tuple3<String, String, Throwable> u) {
+        return serviceUnavailable(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError gatewayTimeout(Tuple3<String, String, Throwable> u) {
+        return gatewayTimeout(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError networkAuthenticationRequired(Tuple3<String, String, Throwable> u) {
+        return networkAuthenticationRequired(u.v1, u.v2, u.v3);
+    }
+
+    public static DomainError badRequest(String userPattern, String systemPattern, Object... args) {
+        return badRequest(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError unauthorized(String userPattern, String systemPattern, Object... args) {
+        return unauthorized(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError paymentRequired(String userPattern, String systemPattern, Object... args) {
+        return paymentRequired(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError forbidden(String userPattern, String systemPattern, Object... args) {
+        return forbidden(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError notFound(String userPattern, String systemPattern, Object... args) {
+        return notFound(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError methodNotAllowed(String userPattern, String systemPattern, Object... args) {
+        return methodNotAllowed(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError notAcceptable(String userPattern, String systemPattern, Object... args) {
+        return notAcceptable(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError proxyAuthenticationRequired(String userPattern, String systemPattern, Object... args) {
+        return proxyAuthenticationRequired(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError requestTimeout(String userPattern, String systemPattern, Object... args) {
+        return requestTimeout(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError conflict(String userPattern, String systemPattern, Object... args) {
+        return conflict(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError gone(String userPattern, String systemPattern, Object... args) {
+        return gone(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError lengthRequired(String userPattern, String systemPattern, Object... args) {
+        return lengthRequired(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError preconditionFailed(String userPattern, String systemPattern, Object... args) {
+        return preconditionFailed(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError unsupportedMediaType(String userPattern, String systemPattern, Object... args) {
+        return unsupportedMediaType(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError unsupportedType(String userPattern, String systemPattern, Object... args) {
+        return unsupportedType(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError tooManyRequests(String userPattern, String systemPattern, Object... args) {
+        return tooManyRequests(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError unavailableForLegalReasons(String userPattern, String systemPattern, Object... args) {
+        return unavailableForLegalReasons(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError internalServerError(String userPattern, String systemPattern, Object... args) {
+        return internalServerError(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError notImplemented(String userPattern, String systemPattern, Object... args) {
+        return notImplemented(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError badGateway(String userPattern, String systemPattern, Object... args) {
+        return badGateway(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError serviceUnavailable(String userPattern, String systemPattern, Object... args) {
+        return serviceUnavailable(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError gatewayTimeout(String userPattern, String systemPattern, Object... args) {
+        return gatewayTimeout(formatAll(userPattern, systemPattern, args));
+    }
+
+    public static DomainError networkAuthenticationRequired(String userPattern, String systemPattern, Object... args) {
+        return networkAuthenticationRequired(formatAll(userPattern, systemPattern, args));
+    }
+
 }
+
+

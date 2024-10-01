@@ -314,6 +314,10 @@ public class DomainError extends RuntimeException {
     public final String system;
     private transient List<String> stacktrace;
 
+    protected void setStacktrace(List<String> trace) {
+        this.stacktrace = trace;
+    }
+
     static public Tuple2<String, Throwable> format(String pattern, Object... args) {
         var o = MessageFormatter.format(pattern, args);
         return new Tuple2<>(o.getMessage(), o.getThrowable());
@@ -372,6 +376,13 @@ public class DomainError extends RuntimeException {
         this.system = system;
     }
 
+    public static DomainError error(int code, @Nullable String user, @Nullable String system, @Nullable Throwable cause) {
+        return new DomainError(code, user, system, cause);
+    }
+
+    public static DomainError error(int code, String user, String system, Object... args) {
+        return new DomainError(code, formatAll(user, system, args));
+    }
 
     public static DomainError badRequest(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
         return new DomainError(CODE_BAD_REQUEST, user, system, cause);

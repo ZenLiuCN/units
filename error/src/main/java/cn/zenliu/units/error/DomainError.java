@@ -658,6 +658,55 @@ public class DomainError extends RuntimeException {
         return networkAuthenticationRequired(formatAll(userPattern, systemPattern, args));
     }
 
+    interface Maker {
+        DomainError with(Object... args);
+    }
+
+    /**
+     * @param code the error code
+     * @param userPattern user message pattern
+     * @param systemPattern system message pattern
+     * @param preArgs predefined arguments
+     * @return maker of Domain error
+     */
+    public static Maker errorMaker(int code, @Nullable String userPattern, @Nullable String systemPattern, Object... preArgs) {
+        return (as) -> error(code, userPattern, systemPattern, append(preArgs, as));
+    }
+
+    static final Object[] Empty = new Object[0];
+
+    public static Object[] append(Object[] a, Object[] b) {
+        if (a.length == 0 && b.length == 0) return Empty;
+        if (a.length == 0) return b;
+        if (b.length == 0) return a;
+        int an = a.length;
+        a = Arrays.copyOf(a, an + b.length);
+        System.arraycopy(a, an, b, 0, b.length);
+        return a;
+    }
+
+
+    public static Maker makeBadRequest(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_BAD_REQUEST,user,system,preArgs);}
+    public static Maker makeUnauthorized(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNAUTHORIZED,user,system,preArgs);}
+    public static Maker makePaymentRequired(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_PAYMENT_REQUIRED,user,system,preArgs);}
+    public static Maker makeForbidden(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_FORBIDDEN,user,system,preArgs);}
+    public static Maker makeNotFound(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NOT_FOUND,user,system,preArgs);}
+    public static Maker makeMethodNotAllowed(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_METHOD_NOT_ALLOWED,user,system,preArgs);}
+    public static Maker makeNotAcceptable(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NOT_ACCEPTABLE,user,system,preArgs);}
+    public static Maker makeRequestTimeout(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_REQUEST_TIMEOUT,user,system,preArgs);}
+    public static Maker makeConflict(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_CONFLICT,user,system,preArgs);}
+    public static Maker makeGone(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_GONE,user,system,preArgs);}
+    public static Maker makePreconditionFailed(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_PRECONDITION_FAILED,user,system,preArgs);}
+    public static Maker makeUnsupportedMediaType(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNSUPPORTED_MEDIA_TYPE,user,system,preArgs);}
+    public static Maker makeUnsupportedType(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNSUPPORTED_TYPE,user,system,preArgs);}
+    public static Maker makeTooManyRequests(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_TOO_MANY_REQUESTS,user,system,preArgs);}
+    public static Maker makeUnavailableForLegalReasons(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNAVAILABLE_FOR_LEGAL_REASONS,user,system,preArgs);}
+    public static Maker makeInternalServerError(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_INTERNAL_SERVER_ERROR,user,system,preArgs);}
+    public static Maker makeNotImplemented(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NOT_IMPLEMENTED,user,system,preArgs);}
+    public static Maker makeBadGateway(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_BAD_GATEWAY,user,system,preArgs);}
+    public static Maker makeServiceUnavailable(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_SERVICE_UNAVAILABLE,user,system,preArgs);}
+    public static Maker makeGatewayTimeout(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_GATEWAY_TIMEOUT,user,system,preArgs);}
+    public static Maker makeNetworkAuthenticationRequired(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NETWORK_AUTHENTICATION_REQUIRED,user,system,preArgs);}
 }
 
 

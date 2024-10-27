@@ -28,6 +28,7 @@
         <module>enhancer</module>
         <module>reflect</module>
         <module>conf</module>
+        <module>func</module>
     </modules>
 
 
@@ -79,6 +80,7 @@
         <versions.caffeine>3.1.8</versions.caffeine>
         <versions.javapoet>1.13.0</versions.javapoet>
         <versions.byte-buddy>1.14.9</versions.byte-buddy>
+        <versions.jool>0.9.15</versions.jool>
         <versions.netty>4.1.100.Final</versions.netty>
 
         <versions.compile-testing>0.21.0</versions.compile-testing>
@@ -149,6 +151,11 @@
             </dependency>
             <!--//endregion -->
             <!--//region Components -->
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jool</artifactId>
+                <version>${versions.jool}</version>
+            </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-buffer</artifactId>

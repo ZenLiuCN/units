@@ -64,11 +64,11 @@ public class DomainError extends RuntimeException {
     public static final int CODE_SERVICE_UNAVAILABLE = 503;
     public static final int CODE_GATEWAY_TIMEOUT = 504;
     public static final int CODE_NETWORK_AUTHENTICATION_REQUIRED = 505;
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static final int CODE_INTERNAL = CODE_INTERNAL_SERVER_ERROR;
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static final int CODE_TIMEOUT = CODE_REQUEST_TIMEOUT;
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static final int CODE_UNAVAILABLE = CODE_SERVICE_UNAVAILABLE;
 
     //region Deprecated functions
@@ -89,7 +89,7 @@ public class DomainError extends RuntimeException {
      * @return DomainError
      * @deprecated will be removed soon
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError error(int code, Function<String, String> translator, String system, String user, int from, Object... args) {
         if (args.length == 0)
             return new DomainError(code, translate(translator, user), translate(translator, system), null);
@@ -137,24 +137,24 @@ public class DomainError extends RuntimeException {
         }
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
 
     public static DomainError badRequest(String pattern, Object... args) {
         return error(CODE_BAD_REQUEST, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError badRequestSys(String pattern, Object... args) {
         return errorSys(CODE_BAD_REQUEST, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
 
     public static DomainError badRequest(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_BAD_REQUEST, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError unauthorized(String pattern, Object... args) {
         return error(CODE_UNAUTHORIZED, pattern, args);
     }
@@ -163,127 +163,127 @@ public class DomainError extends RuntimeException {
         return errorSys(CODE_UNAUTHORIZED, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
 
     public static DomainError unauthorized(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_UNAUTHORIZED, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError forbidden(String pattern, Object... args) {
         return error(CODE_FORBIDDEN, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError forbiddenSys(String pattern, Object... args) {
         return errorSys(CODE_FORBIDDEN, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
 
     public static DomainError forbidden(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_FORBIDDEN, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError notFound(String pattern, Object... args) {
         return error(CODE_NOT_FOUND, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError notFoundSys(String pattern, Object... args) {
         return errorSys(CODE_NOT_FOUND, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
 
     public static DomainError notFound(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_NOT_FOUND, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError timeout(String pattern, Object... args) {
         return error(CODE_TIMEOUT, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError timeoutSys(String pattern, Object... args) {
         return errorSys(CODE_TIMEOUT, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError timeout(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_TIMEOUT, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError conflict(String pattern, Object... args) {
         return error(CODE_CONFLICT, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError conflictSys(String pattern, Object... args) {
         return errorSys(CODE_CONFLICT, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
 
     public static DomainError conflict(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_CONFLICT, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError gone(String pattern, Object... args) {
         return error(CODE_GONE, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError goneSys(String pattern, Object... args) {
         return errorSys(CODE_GONE, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError gone(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_GONE, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError internal(String pattern, Object... args) {
         return error(CODE_INTERNAL, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError internalSys(String pattern, Object... args) {
         return errorSys(CODE_INTERNAL, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError internal(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_INTERNAL, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError unavailable(String pattern, Object... args) {
         return error(CODE_UNAVAILABLE, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError unavailableSys(String pattern, Object... args) {
         return errorSys(CODE_UNAVAILABLE, pattern, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
 
     public static DomainError unavailable(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
         return error(CODE_UNAVAILABLE, system, user, from, args);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError error(int code, String userPattern, Object... args) {
         return new DomainError(code, formatAll(userPattern, null, args));
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static DomainError errorSys(int code, String systemPattern, Object... args) {
         return new DomainError(code, formatAll(null, systemPattern, args));
     }
@@ -327,10 +327,12 @@ public class DomainError extends RuntimeException {
         if ((userPattern == null || userPattern.isBlank()) && (systemPattern == null || systemPattern.isBlank())) {
             return new Tuple3<>(null, null, null);
         }
-
         var u = userPattern == null || userPattern.isBlank() ? null : MessageFormatter.format(userPattern, args);
         var s = systemPattern == null || systemPattern.isBlank() ? null : MessageFormatter.format(systemPattern, args);
-        return new Tuple3<>(u == null ? null : u.getMessage(), s == null ? null : s.getMessage(), (u == null ? s : u).getThrowable());
+        return new Tuple3<>(
+                u == null ? null : u.getMessage(),
+                s == null ? null : s.getMessage(),
+                u == null ? s == null ? null : s.getThrowable() : u.getThrowable());
     }
 
     static public List<String> dumpStack(Throwable ex) {
@@ -388,6 +390,7 @@ public class DomainError extends RuntimeException {
         return new DomainError(code, formatAll(user, system, args));
     }
 
+    //region no format
     public static DomainError badRequest(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
         return new DomainError(CODE_BAD_REQUEST, user, system, cause);
     }
@@ -473,7 +476,9 @@ public class DomainError extends RuntimeException {
     public static DomainError networkAuthenticationRequired(@Nullable String user, @Nullable String system, @Nullable Throwable cause) {
         return new DomainError(CODE_NETWORK_AUTHENTICATION_REQUIRED, user, system, cause);
     }
+    //endregion
 
+    //region Tuple
     public static DomainError badRequest(Tuple3<String, String, Throwable> u) {
         return badRequest(u.v1, u.v2, u.v3);
     }
@@ -565,7 +570,9 @@ public class DomainError extends RuntimeException {
     public static DomainError networkAuthenticationRequired(Tuple3<String, String, Throwable> u) {
         return networkAuthenticationRequired(u.v1, u.v2, u.v3);
     }
+    //endregion
 
+    //region Format
     public static DomainError badRequest(String userPattern, String systemPattern, Object... args) {
         return badRequest(formatAll(userPattern, systemPattern, args));
     }
@@ -657,16 +664,14 @@ public class DomainError extends RuntimeException {
     public static DomainError networkAuthenticationRequired(String userPattern, String systemPattern, Object... args) {
         return networkAuthenticationRequired(formatAll(userPattern, systemPattern, args));
     }
+    //endregion
 
-    interface Maker {
-        DomainError with(Object... args);
-    }
 
     /**
-     * @param code the error code
-     * @param userPattern user message pattern
+     * @param code          the error code
+     * @param userPattern   user message pattern
      * @param systemPattern system message pattern
-     * @param preArgs predefined arguments
+     * @param preArgs       predefined arguments
      * @return maker of Domain error
      */
     public static Maker errorMaker(int code, @Nullable String userPattern, @Nullable String systemPattern, Object... preArgs) {
@@ -685,28 +690,646 @@ public class DomainError extends RuntimeException {
         return a;
     }
 
+    //region Builder
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    public static Maker makeBadRequest(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_BAD_REQUEST,user,system,preArgs);}
-    public static Maker makeUnauthorized(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNAUTHORIZED,user,system,preArgs);}
-    public static Maker makePaymentRequired(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_PAYMENT_REQUIRED,user,system,preArgs);}
-    public static Maker makeForbidden(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_FORBIDDEN,user,system,preArgs);}
-    public static Maker makeNotFound(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NOT_FOUND,user,system,preArgs);}
-    public static Maker makeMethodNotAllowed(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_METHOD_NOT_ALLOWED,user,system,preArgs);}
-    public static Maker makeNotAcceptable(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NOT_ACCEPTABLE,user,system,preArgs);}
-    public static Maker makeRequestTimeout(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_REQUEST_TIMEOUT,user,system,preArgs);}
-    public static Maker makeConflict(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_CONFLICT,user,system,preArgs);}
-    public static Maker makeGone(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_GONE,user,system,preArgs);}
-    public static Maker makePreconditionFailed(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_PRECONDITION_FAILED,user,system,preArgs);}
-    public static Maker makeUnsupportedMediaType(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNSUPPORTED_MEDIA_TYPE,user,system,preArgs);}
-    public static Maker makeUnsupportedType(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNSUPPORTED_TYPE,user,system,preArgs);}
-    public static Maker makeTooManyRequests(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_TOO_MANY_REQUESTS,user,system,preArgs);}
-    public static Maker makeUnavailableForLegalReasons(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_UNAVAILABLE_FOR_LEGAL_REASONS,user,system,preArgs);}
-    public static Maker makeInternalServerError(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_INTERNAL_SERVER_ERROR,user,system,preArgs);}
-    public static Maker makeNotImplemented(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NOT_IMPLEMENTED,user,system,preArgs);}
-    public static Maker makeBadGateway(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_BAD_GATEWAY,user,system,preArgs);}
-    public static Maker makeServiceUnavailable(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_SERVICE_UNAVAILABLE,user,system,preArgs);}
-    public static Maker makeGatewayTimeout(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_GATEWAY_TIMEOUT,user,system,preArgs);}
-    public static Maker makeNetworkAuthenticationRequired(@Nullable String user,String system,Object ... preArgs){return errorMaker(CODE_NETWORK_AUTHENTICATION_REQUIRED,user,system,preArgs);}
+    public static class Builder {
+        int code = 500;
+        String u;
+        String s;
+
+        /**
+         * build without any message
+         */
+        public DomainError build() {
+            return error(code, null, null, new Object[0]);
+        }
+
+        /**
+         * build with system message only
+         *
+         * @param pattern the pattern
+         * @param args    args
+         */
+
+        public DomainError system(String pattern, Object... args) {
+            return error(code, null, pattern, args);
+        }
+
+        /**
+         * build with user message only
+         *
+         * @param pattern the pattern
+         * @param args    args
+         */
+
+        public DomainError user(String pattern, Object... args) {
+            return error(code, pattern, null, args);
+        }
+
+        /**
+         * build with user and system use same message
+         *
+         * @param pattern the pattern
+         * @param args    args
+         */
+        public DomainError all(String pattern, Object... args) {
+            return error(code, pattern, pattern, args);
+        }
+
+        /**
+         * build with user and system use different message
+         *
+         * @param user   the pattern for user
+         * @param system the pattern for system
+         * @param args   args
+         */
+        public DomainError both(String user, String system, Object... args) {
+            return error(code, user, system, args);
+        }
+
+        /**
+         * @param args the args for patterns
+         * @return DomainError with pre-stage set values.
+         */
+        public DomainError make(Object... args) {
+            return error(code, u, s, args);
+        }
+
+        public Builder user(String pattern) {
+            this.u = pattern;
+            return this;
+        }
+
+        public Builder system(String pattern) {
+            this.s = pattern;
+            return this;
+        }
+
+        public Builder code(int code) {
+            this.code = code;
+            return this;
+        }
+
+        public Builder badRequest() {
+            code = CODE_BAD_REQUEST;
+            return this;
+        }
+
+        public Builder c400() {
+            code = CODE_BAD_REQUEST;
+            return this;
+        }
+
+        public Builder unauthorized() {
+            code = CODE_UNAUTHORIZED;
+            return this;
+        }
+
+        public Builder c401() {
+            code = CODE_UNAUTHORIZED;
+            return this;
+        }
+
+        public Builder paymentRequired() {
+            code = CODE_PAYMENT_REQUIRED;
+            return this;
+        }
+
+        public Builder c402() {
+            code = CODE_PAYMENT_REQUIRED;
+            return this;
+        }
+
+        public Builder forbidden() {
+            code = CODE_FORBIDDEN;
+            return this;
+        }
+
+        public Builder c403() {
+            code = CODE_FORBIDDEN;
+            return this;
+        }
+
+        public Builder notFound() {
+            code = CODE_NOT_FOUND;
+            return this;
+        }
+
+        public Builder c404() {
+            code = CODE_NOT_FOUND;
+            return this;
+        }
+
+        public Builder methodNotAllowed() {
+            code = CODE_METHOD_NOT_ALLOWED;
+            return this;
+        }
+
+        public Builder c405() {
+            code = CODE_METHOD_NOT_ALLOWED;
+            return this;
+        }
+
+        public Builder notAcceptable() {
+            code = CODE_NOT_ACCEPTABLE;
+            return this;
+        }
+
+        public Builder c406() {
+            code = CODE_NOT_ACCEPTABLE;
+            return this;
+        }
+
+        public Builder requestTimeout() {
+            code = CODE_REQUEST_TIMEOUT;
+            return this;
+        }
+
+        public Builder c408() {
+            code = CODE_REQUEST_TIMEOUT;
+            return this;
+        }
+
+        public Builder conflict() {
+            code = CODE_CONFLICT;
+            return this;
+        }
+
+        public Builder c409() {
+            code = CODE_CONFLICT;
+            return this;
+        }
+
+        public Builder gone() {
+            code = CODE_GONE;
+            return this;
+        }
+
+        public Builder c410() {
+            code = CODE_GONE;
+            return this;
+        }
+
+        public Builder preconditionFailed() {
+            code = CODE_PRECONDITION_FAILED;
+            return this;
+        }
+
+        public Builder c412() {
+            code = CODE_PRECONDITION_FAILED;
+            return this;
+        }
+
+        public Builder unsupportedMediaType() {
+            code = CODE_UNSUPPORTED_MEDIA_TYPE;
+            return this;
+        }
+
+        public Builder c415() {
+            code = CODE_UNSUPPORTED_MEDIA_TYPE;
+            return this;
+        }
+
+        public Builder unsupportedType() {
+            code = CODE_UNSUPPORTED_TYPE;
+            return this;
+        }
+
+        public Builder c416() {
+            code = CODE_UNSUPPORTED_TYPE;
+            return this;
+        }
+
+        public Builder tooManyRequests() {
+            code = CODE_TOO_MANY_REQUESTS;
+            return this;
+        }
+
+        public Builder c429() {
+            code = CODE_TOO_MANY_REQUESTS;
+            return this;
+        }
+
+        public Builder unavailableForLegalReasons() {
+            code = CODE_UNAVAILABLE_FOR_LEGAL_REASONS;
+            return this;
+        }
+
+        public Builder c451() {
+            code = CODE_UNAVAILABLE_FOR_LEGAL_REASONS;
+            return this;
+        }
+
+        public Builder internalServerError() {
+            code = CODE_INTERNAL_SERVER_ERROR;
+            return this;
+        }
+
+        public Builder c500() {
+            code = CODE_INTERNAL_SERVER_ERROR;
+            return this;
+        }
+
+        public Builder notImplemented() {
+            code = CODE_NOT_IMPLEMENTED;
+            return this;
+        }
+
+        public Builder c501() {
+            code = CODE_NOT_IMPLEMENTED;
+            return this;
+        }
+
+        public Builder badGateway() {
+            code = CODE_BAD_GATEWAY;
+            return this;
+        }
+
+        public Builder c502() {
+            code = CODE_BAD_GATEWAY;
+            return this;
+        }
+
+        public Builder serviceUnavailable() {
+            code = CODE_SERVICE_UNAVAILABLE;
+            return this;
+        }
+
+        public Builder c503() {
+            code = CODE_SERVICE_UNAVAILABLE;
+            return this;
+        }
+
+        public Builder gatewayTimeout() {
+            code = CODE_GATEWAY_TIMEOUT;
+            return this;
+        }
+
+        public Builder c504() {
+            code = CODE_GATEWAY_TIMEOUT;
+            return this;
+        }
+
+        public Builder networkAuthenticationRequired() {
+            code = CODE_NETWORK_AUTHENTICATION_REQUIRED;
+            return this;
+        }
+
+        public Builder c505() {
+            code = CODE_NETWORK_AUTHENTICATION_REQUIRED;
+            return this;
+        }
+    }
+    //endregion
+
+    //region Makers
+    interface Maker {
+        DomainError with(Object... args);
+    }
+
+    public static Maker makeBadRequest(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_BAD_REQUEST, user, system, preArgs);
+    }
+
+    public static Maker makeUnauthorized(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_UNAUTHORIZED, user, system, preArgs);
+    }
+
+    public static Maker makePaymentRequired(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_PAYMENT_REQUIRED, user, system, preArgs);
+    }
+
+    public static Maker makeForbidden(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_FORBIDDEN, user, system, preArgs);
+    }
+
+    public static Maker makeNotFound(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_NOT_FOUND, user, system, preArgs);
+    }
+
+    public static Maker makeMethodNotAllowed(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_METHOD_NOT_ALLOWED, user, system, preArgs);
+    }
+
+    public static Maker makeNotAcceptable(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_NOT_ACCEPTABLE, user, system, preArgs);
+    }
+
+    public static Maker makeRequestTimeout(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_REQUEST_TIMEOUT, user, system, preArgs);
+    }
+
+    public static Maker makeConflict(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_CONFLICT, user, system, preArgs);
+    }
+
+    public static Maker makeGone(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_GONE, user, system, preArgs);
+    }
+
+    public static Maker makePreconditionFailed(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_PRECONDITION_FAILED, user, system, preArgs);
+    }
+
+    public static Maker makeUnsupportedMediaType(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_UNSUPPORTED_MEDIA_TYPE, user, system, preArgs);
+    }
+
+    public static Maker makeUnsupportedType(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_UNSUPPORTED_TYPE, user, system, preArgs);
+    }
+
+    public static Maker makeTooManyRequests(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_TOO_MANY_REQUESTS, user, system, preArgs);
+    }
+
+    public static Maker makeUnavailableForLegalReasons(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_UNAVAILABLE_FOR_LEGAL_REASONS, user, system, preArgs);
+    }
+
+    public static Maker makeInternalServerError(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_INTERNAL_SERVER_ERROR, user, system, preArgs);
+    }
+
+    public static Maker makeNotImplemented(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_NOT_IMPLEMENTED, user, system, preArgs);
+    }
+
+    public static Maker makeBadGateway(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_BAD_GATEWAY, user, system, preArgs);
+    }
+
+    public static Maker makeServiceUnavailable(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_SERVICE_UNAVAILABLE, user, system, preArgs);
+    }
+
+    public static Maker makeGatewayTimeout(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_GATEWAY_TIMEOUT, user, system, preArgs);
+    }
+
+    public static Maker makeNetworkAuthenticationRequired(@Nullable String user, String system, Object... preArgs) {
+        return errorMaker(CODE_NETWORK_AUTHENTICATION_REQUIRED, user, system, preArgs);
+    }
+    //endregion
+
+
+    //region code constructors
+    public static DomainError c400(String user, String system, Object... args) {
+        return badRequest(user, system, args);
+    }
+
+    public static DomainError u400(String user, Object... args) {
+        return badRequest(user, null, args);
+    }
+
+    public static DomainError s400(String system, Object... args) {
+        return badRequest(null, system, args);
+    }
+
+    public static DomainError c401(String user, String system, Object... args) {
+        return unauthorized(user, system, args);
+    }
+
+    public static DomainError u401(String user, Object... args) {
+        return unauthorized(user, null, args);
+    }
+
+    public static DomainError s401(String system, Object... args) {
+        return unauthorized(null, system, args);
+    }
+
+    public static DomainError c402(String user, String system, Object... args) {
+        return paymentRequired(user, system, args);
+    }
+
+    public static DomainError u402(String user, Object... args) {
+        return paymentRequired(user, null, args);
+    }
+
+    public static DomainError s402(String system, Object... args) {
+        return paymentRequired(null, system, args);
+    }
+
+    public static DomainError c403(String user, String system, Object... args) {
+        return forbidden(user, system, args);
+    }
+
+    public static DomainError u403(String user, Object... args) {
+        return forbidden(user, null, args);
+    }
+
+    public static DomainError s403(String system, Object... args) {
+        return forbidden(null, system, args);
+    }
+
+    public static DomainError c404(String user, String system, Object... args) {
+        return notFound(user, system, args);
+    }
+
+    public static DomainError u404(String user, Object... args) {
+        return notFound(user, null, args);
+    }
+
+    public static DomainError s404(String system, Object... args) {
+        return notFound(null, system, args);
+    }
+
+    public static DomainError c405(String user, String system, Object... args) {
+        return methodNotAllowed(user, system, args);
+    }
+
+    public static DomainError u405(String user, Object... args) {
+        return methodNotAllowed(user, null, args);
+    }
+
+    public static DomainError s405(String system, Object... args) {
+        return methodNotAllowed(null, system, args);
+    }
+
+    public static DomainError c406(String user, String system, Object... args) {
+        return notAcceptable(user, system, args);
+    }
+
+    public static DomainError u406(String user, Object... args) {
+        return notAcceptable(user, null, args);
+    }
+
+    public static DomainError s406(String system, Object... args) {
+        return notAcceptable(null, system, args);
+    }
+
+    public static DomainError c408(String user, String system, Object... args) {
+        return requestTimeout(user, system, args);
+    }
+
+    public static DomainError u408(String user, Object... args) {
+        return requestTimeout(user, null, args);
+    }
+
+    public static DomainError s408(String system, Object... args) {
+        return requestTimeout(null, system, args);
+    }
+
+    public static DomainError c409(String user, String system, Object... args) {
+        return conflict(user, system, args);
+    }
+
+    public static DomainError u409(String user, Object... args) {
+        return conflict(user, null, args);
+    }
+
+    public static DomainError s409(String system, Object... args) {
+        return conflict(null, system, args);
+    }
+
+    public static DomainError c410(String user, String system, Object... args) {
+        return gone(user, system, args);
+    }
+
+    public static DomainError u410(String user, Object... args) {
+        return gone(user, null, args);
+    }
+
+    public static DomainError s410(String system, Object... args) {
+        return gone(null, system, args);
+    }
+
+    public static DomainError c412(String user, String system, Object... args) {
+        return preconditionFailed(user, system, args);
+    }
+
+    public static DomainError u412(String user, Object... args) {
+        return preconditionFailed(user, null, args);
+    }
+
+    public static DomainError s412(String system, Object... args) {
+        return preconditionFailed(null, system, args);
+    }
+
+    public static DomainError c415(String user, String system, Object... args) {
+        return unsupportedMediaType(user, system, args);
+    }
+
+    public static DomainError u415(String user, Object... args) {
+        return unsupportedMediaType(user, null, args);
+    }
+
+    public static DomainError s415(String system, Object... args) {
+        return unsupportedMediaType(null, system, args);
+    }
+
+    public static DomainError c416(String user, String system, Object... args) {
+        return unsupportedType(user, system, args);
+    }
+
+    public static DomainError u416(String user, Object... args) {
+        return unsupportedType(user, null, args);
+    }
+
+    public static DomainError s416(String system, Object... args) {
+        return unsupportedType(null, system, args);
+    }
+
+    public static DomainError c429(String user, String system, Object... args) {
+        return tooManyRequests(user, system, args);
+    }
+
+    public static DomainError u429(String user, Object... args) {
+        return tooManyRequests(user, null, args);
+    }
+
+    public static DomainError s429(String system, Object... args) {
+        return tooManyRequests(null, system, args);
+    }
+
+    public static DomainError c451(String user, String system, Object... args) {
+        return unavailableForLegalReasons(user, system, args);
+    }
+
+    public static DomainError u451(String user, Object... args) {
+        return unavailableForLegalReasons(user, null, args);
+    }
+
+    public static DomainError s451(String system, Object... args) {
+        return unavailableForLegalReasons(null, system, args);
+    }
+
+    public static DomainError c500(String user, String system, Object... args) {
+        return internalServerError(user, system, args);
+    }
+
+    public static DomainError u500(String user, Object... args) {
+        return internalServerError(user, null, args);
+    }
+
+    public static DomainError s500(String system, Object... args) {
+        return internalServerError(null, system, args);
+    }
+
+    public static DomainError c501(String user, String system, Object... args) {
+        return notImplemented(user, system, args);
+    }
+
+    public static DomainError u501(String user, Object... args) {
+        return notImplemented(user, null, args);
+    }
+
+    public static DomainError s501(String system, Object... args) {
+        return notImplemented(null, system, args);
+    }
+
+    public static DomainError c502(String user, String system, Object... args) {
+        return badGateway(user, system, args);
+    }
+
+    public static DomainError u502(String user, Object... args) {
+        return badGateway(user, null, args);
+    }
+
+    public static DomainError s502(String system, Object... args) {
+        return badGateway(null, system, args);
+    }
+
+    public static DomainError c503(String user, String system, Object... args) {
+        return serviceUnavailable(user, system, args);
+    }
+
+    public static DomainError u503(String user, Object... args) {
+        return serviceUnavailable(user, null, args);
+    }
+
+    public static DomainError s503(String system, Object... args) {
+        return serviceUnavailable(null, system, args);
+    }
+
+    public static DomainError c504(String user, String system, Object... args) {
+        return gatewayTimeout(user, system, args);
+    }
+
+    public static DomainError u504(String user, Object... args) {
+        return gatewayTimeout(user, null, args);
+    }
+
+    public static DomainError s504(String system, Object... args) {
+        return gatewayTimeout(null, system, args);
+    }
+
+    public static DomainError c505(String user, String system, Object... args) {
+        return networkAuthenticationRequired(user, system, args);
+    }
+
+    public static DomainError u505(String user, Object... args) {
+        return networkAuthenticationRequired(user, null, args);
+    }
+
+    public static DomainError s505(String system, Object... args) {
+        return networkAuthenticationRequired(null, system, args);
+    }
+    //endregion
+
 }
 
 

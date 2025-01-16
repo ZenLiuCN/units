@@ -50,7 +50,6 @@ public class DomainError extends RuntimeException {
     public static final int CODE_METHOD_NOT_ALLOWED = 405;
     public static final int CODE_NOT_ACCEPTABLE = 406;
     public static final int CODE_REQUEST_TIMEOUT = 408;
-
     public static final int CODE_CONFLICT = 409;
     public static final int CODE_GONE = 410;
     public static final int CODE_PRECONDITION_FAILED = 412;
@@ -64,6 +63,8 @@ public class DomainError extends RuntimeException {
     public static final int CODE_SERVICE_UNAVAILABLE = 503;
     public static final int CODE_GATEWAY_TIMEOUT = 504;
     public static final int CODE_NETWORK_AUTHENTICATION_REQUIRED = 505;
+
+
     @Deprecated(forRemoval = true)
     public static final int CODE_INTERNAL = CODE_INTERNAL_SERVER_ERROR;
     @Deprecated(forRemoval = true)
@@ -307,7 +308,6 @@ public class DomainError extends RuntimeException {
     }
 
     public static final AtomicInteger STACK_TRACE_SIZE = new AtomicInteger(1024);
-
 
     public final int code;
     public final String user;
@@ -667,17 +667,6 @@ public class DomainError extends RuntimeException {
     //endregion
 
 
-    /**
-     * @param code          the error code
-     * @param userPattern   user message pattern
-     * @param systemPattern system message pattern
-     * @param preArgs       predefined arguments
-     * @return maker of Domain error
-     */
-    public static Maker errorMaker(int code, @Nullable String userPattern, @Nullable String systemPattern, Object... preArgs) {
-        return (as) -> error(code, userPattern, systemPattern, append(preArgs, as));
-    }
-
     static final Object[] Empty = new Object[0];
 
     public static Object[] append(Object[] a, Object[] b) {
@@ -695,6 +684,95 @@ public class DomainError extends RuntimeException {
         return new Builder();
     }
 
+    public static Builder code(int code) {
+        return new Builder().code(code);
+    }
+
+    public static Builder badRequest() {
+        return builder().badRequest();
+    }
+
+    public static Builder unauthorized() {
+        return builder().unauthorized();
+    }
+
+    public static Builder paymentRequired() {
+        return builder().paymentRequired();
+    }
+
+    public static Builder forbidden() {
+        return builder().forbidden();
+    }
+
+    public static Builder notFound() {
+        return builder().notFound();
+    }
+
+    public static Builder methodNotAllowed() {
+        return builder().methodNotAllowed();
+    }
+
+    public static Builder notAcceptable() {
+        return builder().notAcceptable();
+    }
+
+    public static Builder requestTimeout() {
+        return builder().requestTimeout();
+    }
+
+    public static Builder conflict() {
+        return builder().conflict();
+    }
+
+    public static Builder gone() {
+        return builder().gone();
+    }
+
+    public static Builder preconditionFailed() {
+        return builder().preconditionFailed();
+    }
+
+    public static Builder unsupportedMediaType() {
+        return builder().unsupportedMediaType();
+    }
+
+    public static Builder unsupportedType() {
+        return builder().unsupportedType();
+    }
+
+    public static Builder tooManyRequests() {
+        return builder().tooManyRequests();
+    }
+
+    public static Builder unavailableForLegalReasons() {
+        return builder().unavailableForLegalReasons();
+    }
+
+    public static Builder internalServerError() {
+        return builder().internalServerError();
+    }
+
+    public static Builder notImplemented() {
+        return builder().notImplemented();
+    }
+
+    public static Builder badGateway() {
+        return builder().badGateway();
+    }
+
+    public static Builder serviceUnavailable() {
+        return builder().serviceUnavailable();
+    }
+
+    public static Builder gatewayTimeout() {
+        return builder().gatewayTimeout();
+    }
+
+    public static Builder networkAuthenticationRequired() {
+        return builder().networkAuthenticationRequired();
+    }
+
+
     public static class Builder {
         int code = 500;
         String u;
@@ -703,7 +781,7 @@ public class DomainError extends RuntimeException {
         /**
          * build without any message
          */
-        public DomainError build() {
+        public DomainError make() {
             return error(code, null, null, new Object[0]);
         }
 
@@ -758,12 +836,12 @@ public class DomainError extends RuntimeException {
             return error(code, u, s, args);
         }
 
-        public Builder user(String pattern) {
+        public Builder forUser(String pattern) {
             this.u = pattern;
             return this;
         }
 
-        public Builder system(String pattern) {
+        public Builder forSystem(String pattern) {
             this.s = pattern;
             return this;
         }
@@ -985,98 +1063,8 @@ public class DomainError extends RuntimeException {
     }
     //endregion
 
-    //region Makers
-    interface Maker {
-        DomainError with(Object... args);
-    }
-
-    public static Maker makeBadRequest(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_BAD_REQUEST, user, system, preArgs);
-    }
-
-    public static Maker makeUnauthorized(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_UNAUTHORIZED, user, system, preArgs);
-    }
-
-    public static Maker makePaymentRequired(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_PAYMENT_REQUIRED, user, system, preArgs);
-    }
-
-    public static Maker makeForbidden(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_FORBIDDEN, user, system, preArgs);
-    }
-
-    public static Maker makeNotFound(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_NOT_FOUND, user, system, preArgs);
-    }
-
-    public static Maker makeMethodNotAllowed(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_METHOD_NOT_ALLOWED, user, system, preArgs);
-    }
-
-    public static Maker makeNotAcceptable(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_NOT_ACCEPTABLE, user, system, preArgs);
-    }
-
-    public static Maker makeRequestTimeout(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_REQUEST_TIMEOUT, user, system, preArgs);
-    }
-
-    public static Maker makeConflict(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_CONFLICT, user, system, preArgs);
-    }
-
-    public static Maker makeGone(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_GONE, user, system, preArgs);
-    }
-
-    public static Maker makePreconditionFailed(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_PRECONDITION_FAILED, user, system, preArgs);
-    }
-
-    public static Maker makeUnsupportedMediaType(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_UNSUPPORTED_MEDIA_TYPE, user, system, preArgs);
-    }
-
-    public static Maker makeUnsupportedType(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_UNSUPPORTED_TYPE, user, system, preArgs);
-    }
-
-    public static Maker makeTooManyRequests(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_TOO_MANY_REQUESTS, user, system, preArgs);
-    }
-
-    public static Maker makeUnavailableForLegalReasons(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_UNAVAILABLE_FOR_LEGAL_REASONS, user, system, preArgs);
-    }
-
-    public static Maker makeInternalServerError(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_INTERNAL_SERVER_ERROR, user, system, preArgs);
-    }
-
-    public static Maker makeNotImplemented(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_NOT_IMPLEMENTED, user, system, preArgs);
-    }
-
-    public static Maker makeBadGateway(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_BAD_GATEWAY, user, system, preArgs);
-    }
-
-    public static Maker makeServiceUnavailable(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_SERVICE_UNAVAILABLE, user, system, preArgs);
-    }
-
-    public static Maker makeGatewayTimeout(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_GATEWAY_TIMEOUT, user, system, preArgs);
-    }
-
-    public static Maker makeNetworkAuthenticationRequired(@Nullable String user, String system, Object... preArgs) {
-        return errorMaker(CODE_NETWORK_AUTHENTICATION_REQUIRED, user, system, preArgs);
-    }
-    //endregion
-
-
     //region code constructors
+
     public static DomainError c400(String user, String system, Object... args) {
         return badRequest(user, system, args);
     }

@@ -73,6 +73,11 @@ public class DomainError extends RuntimeException {
     public static final AtomicInteger STACK_TRACE_LINES = new AtomicInteger(50);
 
     public final int code;
+
+    public int code() {
+        return code;
+    }
+
     public final String user;
     public final String system;
     protected transient List<String> stacktrace;

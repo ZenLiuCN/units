@@ -16,9 +16,7 @@
 package cn.zenliu.units.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 import org.slf4j.helpers.MessageFormatter;
 
 import java.io.ByteArrayOutputStream;
@@ -29,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 /**
  * Domain Error is a RuntimeException with StatusCode and Optional UserMessage.
@@ -65,241 +62,6 @@ public class DomainError extends RuntimeException {
     public static final int CODE_NETWORK_AUTHENTICATION_REQUIRED = 505;
 
 
-    @Deprecated(forRemoval = true)
-    public static final int CODE_INTERNAL = CODE_INTERNAL_SERVER_ERROR;
-    @Deprecated(forRemoval = true)
-    public static final int CODE_TIMEOUT = CODE_REQUEST_TIMEOUT;
-    @Deprecated(forRemoval = true)
-    public static final int CODE_UNAVAILABLE = CODE_SERVICE_UNAVAILABLE;
-
-    //region Deprecated functions
-
-    /**
-     * use detailed message control.
-     *
-     * @param code       the error code
-     * @param translator optional i18n translator ,with translator will treat patter as a key
-     * @param system     system message pattern, null for not use.
-     * @param user       user message pattern, null for not use.
-     * @param from       start of argument index for user message:<br/>
-     *                   -2 for no user pattern arguments;<br/>
-     *                   -1 for both use full-length of arguments;<br/>
-     *                   0 for no system pattern arguments;<br/>
-     *                   >0 for the cut point for user pattern arguments,system pattern use full-length arguments; <br/>
-     * @param args       all args
-     * @return DomainError
-     * @deprecated will be removed soon
-     */
-    @Deprecated(forRemoval = true)
-    public static DomainError error(int code, Function<String, String> translator, String system, String user, int from, Object... args) {
-        if (args.length == 0)
-            return new DomainError(code, translate(translator, user), translate(translator, system), null);
-        assert from < args.length : "user message argument start point longer than arguments";
-        switch (from) {
-            case -2 -> {
-                var sm = MessageFormatter.arrayFormat(translate(translator, system), args);
-                return new DomainError(code, translate(translator, user), sm.getMessage(), sm.getThrowable());
-            }
-            case -1 -> {
-                var sm = MessageFormatter.arrayFormat(translate(translator, system), args);
-                var um = MessageFormatter.arrayFormat(translate(translator, user), args);
-                return new DomainError(code, um.getMessage(), sm.getMessage(), sm.getThrowable());
-            }
-            case 0 -> {
-                var um = MessageFormatter.arrayFormat(translate(translator, user), args);
-                return new DomainError(code, um.getMessage(), system == null ? um.getMessage() : translate(translator, system), um.getThrowable());
-            }
-            default -> {
-                if (from < 0 || from > args.length)
-                    throw new IndexOutOfBoundsException("from " + from + " invalid in length of " + args.length);
-                var sm = system == null ? null : MessageFormatter.arrayFormat(translate(translator, system), args);
-                var um = user == null ? null : MessageFormatter.arrayFormat(translate(translator, user),
-                        Arrays.copyOfRange(args, from, args.length - from));
-                return new DomainError(code,
-                        user == null && system == null ? null : user != null ? um.getMessage() : sm.getMessage(),
-                        user == null && system == null ? null : system != null ? sm.getMessage() : um.getMessage(),
-                        system != null ? sm.getThrowable() : user != null ? um.getThrowable() : null);
-            }
-        }
-
-    }
-
-    static String translate(@Nullable Function<String, String> translator, @Nullable String key) {
-        try {
-            if (key == null) return null;
-            if (translator == null) return key;
-            var v = translator.apply(key);
-            if (v == null) return key;
-            return v;
-        } catch (Exception ex) {
-            System.err.println("translate error " + key);
-            ex.printStackTrace();
-            return key;
-        }
-    }
-
-    @Deprecated(forRemoval = true)
-
-    public static DomainError badRequest(String pattern, Object... args) {
-        return error(CODE_BAD_REQUEST, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError badRequestSys(String pattern, Object... args) {
-        return errorSys(CODE_BAD_REQUEST, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-
-    public static DomainError badRequest(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_BAD_REQUEST, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError unauthorized(String pattern, Object... args) {
-        return error(CODE_UNAUTHORIZED, pattern, args);
-    }
-
-    public static DomainError unauthorizedSys(String pattern, Object... args) {
-        return errorSys(CODE_UNAUTHORIZED, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-
-    public static DomainError unauthorized(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_UNAUTHORIZED, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError forbidden(String pattern, Object... args) {
-        return error(CODE_FORBIDDEN, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError forbiddenSys(String pattern, Object... args) {
-        return errorSys(CODE_FORBIDDEN, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-
-    public static DomainError forbidden(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_FORBIDDEN, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError notFound(String pattern, Object... args) {
-        return error(CODE_NOT_FOUND, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError notFoundSys(String pattern, Object... args) {
-        return errorSys(CODE_NOT_FOUND, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-
-    public static DomainError notFound(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_NOT_FOUND, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError timeout(String pattern, Object... args) {
-        return error(CODE_TIMEOUT, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError timeoutSys(String pattern, Object... args) {
-        return errorSys(CODE_TIMEOUT, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError timeout(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_TIMEOUT, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError conflict(String pattern, Object... args) {
-        return error(CODE_CONFLICT, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError conflictSys(String pattern, Object... args) {
-        return errorSys(CODE_CONFLICT, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-
-    public static DomainError conflict(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_CONFLICT, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError gone(String pattern, Object... args) {
-        return error(CODE_GONE, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError goneSys(String pattern, Object... args) {
-        return errorSys(CODE_GONE, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError gone(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_GONE, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError internal(String pattern, Object... args) {
-        return error(CODE_INTERNAL, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError internalSys(String pattern, Object... args) {
-        return errorSys(CODE_INTERNAL, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError internal(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_INTERNAL, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError unavailable(String pattern, Object... args) {
-        return error(CODE_UNAVAILABLE, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError unavailableSys(String pattern, Object... args) {
-        return errorSys(CODE_UNAVAILABLE, pattern, args);
-    }
-
-    @Deprecated(forRemoval = true)
-
-    public static DomainError unavailable(String system, String user, @Range(from = -2, to = Integer.MAX_VALUE) int from, Object... args) {
-        return error(CODE_UNAVAILABLE, system, user, from, args);
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError error(int code, String userPattern, Object... args) {
-        return new DomainError(code, formatAll(userPattern, null, args));
-    }
-
-    @Deprecated(forRemoval = true)
-    public static DomainError errorSys(int code, String systemPattern, Object... args) {
-        return new DomainError(code, formatAll(null, systemPattern, args));
-    }
-
-    @JsonProperty
-    public int code() {
-        return code;
-    }
-
-
-    @JsonProperty
-    public String message() {
-        return user == null ? system : user;
-    }
-    //endregion
 
     public record Tuple2<V1, V2>(V1 v1, V2 v2) {
     }
@@ -308,6 +70,7 @@ public class DomainError extends RuntimeException {
     }
 
     public static final AtomicInteger STACK_TRACE_SIZE = new AtomicInteger(1024);
+    public static final AtomicInteger STACK_TRACE_LINES = new AtomicInteger(50);
 
     public final int code;
     public final String user;
@@ -335,25 +98,29 @@ public class DomainError extends RuntimeException {
                 u == null ? s == null ? null : s.getThrowable() : u.getThrowable());
     }
 
-    static public List<String> dumpStack(Throwable ex) {
-        List<String> out = List.of();
+    static public List<String> dumpStack(Throwable ex, int lines) {
+        List<String> out = new ArrayList<>();
         try (var sb = new ByteArrayOutputStream(STACK_TRACE_SIZE.get())) {
             ex.printStackTrace(new PrintWriter(sb, true, StandardCharsets.UTF_8));
             var s = sb.toString();
             if (s != null && !s.isBlank()) {
-                out = new ArrayList<>();
                 for (var line : s.split("\n")) {
-                    out.add(line.replaceAll("\t", "    "));
+                    out.add(line.replaceAll("\t", "    ").replaceAll("\r", ""));
+                    if (lines > 0 && out.size() > lines) {
+                        break;
+                    }
                 }
             } else {
-                out = s == null ? List.of() : List.of(s);
+                if (s != null) out.add(s);
             }
         } catch (IOException ignored) {
 
         }
         return out;
     }
-
+    static public List<String> dumpStack(Throwable ex) {
+        return dumpStack(ex,STACK_TRACE_LINES.get());
+    }
     public List<String> stacktrace() {
         if (stacktrace == null) {
             stacktrace = dumpStack(this);

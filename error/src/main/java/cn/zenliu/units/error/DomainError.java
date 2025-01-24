@@ -87,7 +87,7 @@ public class DomainError extends RuntimeException {
     }
 
     static public Tuple2<String, Throwable> format(String pattern, Object... args) {
-        var o = MessageFormatter.format(pattern, args);
+        var o = MessageFormatter.arrayFormat(pattern, args);
         return new Tuple2<>(o.getMessage(), o.getThrowable());
     }
 
@@ -95,8 +95,8 @@ public class DomainError extends RuntimeException {
         if ((userPattern == null || userPattern.isBlank()) && (systemPattern == null || systemPattern.isBlank())) {
             return new Tuple3<>(null, null, null);
         }
-        var u = userPattern == null || userPattern.isBlank() ? null : MessageFormatter.format(userPattern, args);
-        var s = systemPattern == null || systemPattern.isBlank() ? null : MessageFormatter.format(systemPattern, args);
+        var u = userPattern == null || userPattern.isBlank() ? null : MessageFormatter.arrayFormat(userPattern, args);
+        var s = systemPattern == null || systemPattern.isBlank() ? null : MessageFormatter.arrayFormat(systemPattern, args);
         return new Tuple3<>(
                 u == null ? null : u.getMessage(),
                 s == null ? null : s.getMessage(),

@@ -389,16 +389,6 @@
                         </gpgArguments>
                     </configuration>
                 </plugin>
-                <plugin>
-                    <groupId>com.github.danielflower.mavenplugins</groupId>
-                    <artifactId>multi-module-maven-release-plugin</artifactId>
-                    <version>3.8.2</version>
-                    <configuration>
-                        <releaseProfiles>
-                            <releaseProfile>deploy</releaseProfile>
-                        </releaseProfiles>
-                    </configuration>
-                </plugin>
                 <!-- nexus-staging-->
                 <plugin>
                     <groupId>org.sonatype.central</groupId>
@@ -412,12 +402,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>com.github.danielflower.mavenplugins</groupId>
-                <artifactId>multi-module-maven-release-plugin</artifactId>
-            </plugin>
-        </plugins>
     </build>
     <dependencies>
         <!--//region Marker -->
